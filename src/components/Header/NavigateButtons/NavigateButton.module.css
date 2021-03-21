@@ -1,0 +1,19 @@
+.button--main {
+    background: #f2ba49;
+    border: 1px solid #efefef;
+    color: #fff;
+    width: 160px;
+}
+.button--main:hover {
+    color: #fff;
+    background-color: #992420;
+}
+
+.button--light {
+    background: #fff;
+    border: 1px solid #f2ba49;
+    color: #f2ba49;
+}
+.button--light:hover {
+    background: #f2f2f2;
+}

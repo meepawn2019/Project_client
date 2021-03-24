@@ -34,8 +34,14 @@ code {
   overflow-x: scroll;
 }
 
-.modal-dialog {
-  max-width: 800px !important;
+@media only screen and (min-width: 992px) {
+  .modal-dialog {
+    max-width: 800px !important;
+  }
+}
+
+.login {
+  max-width: 540px !important;
 }
 
 .btn-light {

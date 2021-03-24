@@ -16,11 +16,25 @@ export default function Home() {
     setShow(true);
   };
 
+  const onShowLoginModal = () => {
+    setModalTitle("Đăng nhập");
+    setModalType("login");
+    setShow(true);
+  };
+
+  const onShowRegisterModal = () => {
+    setModalTitle("Đăng ký");
+    setModalType("register");
+    setShow(true);
+  };
+
   return (
     <div>
       <Header
         onShowModal={handleShow}
         onShowPostQuestionModal={onShowPostQuestionModal}
+        onShowLoginModal={onShowLoginModal}
+        onShowRegisterModal={onShowRegisterModal}
       />
       <ModalBody
         show={show}

@@ -1,0 +1,51 @@
+.card-box {
+  background-color: #fff;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.card-box .header-left-card {
+  font-weight: 700;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 18px;
+  background: #fdf8ec;
+  color: #f2ba49;
+  border-radius: 4px 4px 0 0;
+}
+
+.user-title {
+  color: #282829;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.user-title {
+  color: #282829 !important;
+  cursor: pointer;
+  font-size: 16px !important;
+}
+
+.question-title {
+  color: #333 !important;
+  font-weight: 700;
+  font-size: 1.5rem !important;
+}
+
+.html-render {
+  overflow: hidden;
+}
+
+.ribbon-box {
+  position: relative;
+}
+
+.question--card-body {
+  padding-bottom: 0.7rem !important;
+}
+
+span img {
+  width: 100%;
+}

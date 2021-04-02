@@ -102,10 +102,10 @@ export default function CardBox(props) {
                   {question.author}
                 </a>
               </div>
-              <div className="pt-3 w-100"></div>
+              {/* <div className="pt-3 w-100"></div> */}
             </div>
           </div>
-          <div style={{ borderTop: "1px solid rgb(221, 221, 221);" }}>
+          <div style={{ borderTop: "1px solid rgb(221, 221, 221)" }}>
             <div className="question-bottom align-items-baseline align-items-lg-center d-flex flex-column flex-lg-row-reverse justify-content-between px-4 py-2">
               <Button className="float-right"> Trả lời</Button>
             </div>

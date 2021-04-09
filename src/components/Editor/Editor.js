@@ -1,6 +1,5 @@
 import React from "react";
-const ReactQuill =
-  typeof window === "object" ? require("react-quill") : () => false;
+import { ReactQuill } from "react-quill";
 import EditorToolbar, { modules, formats } from "./EditorToolbar";
 import "react-quill/dist/quill.snow.css";
 

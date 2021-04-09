@@ -1,7 +1,23 @@
 import React, { useState } from "react";
-import { Form, Modal, Button } from "react-bootstrap";
-import Select from "react-select";
+import { Form, Modal } from "react-bootstrap";
+import {
+  Button,
+  FormControl,
+  FormGroup,
+  InputLabel,
+  Input,
+  TextField,
+  FormHelperText,
+  FormControlLabel,
+  Checkbox,
+  DialogContent,
+  DialogActions,
+  Select,
+} from "@material-ui/core";
+// import Select from "react-select";
 import ReactQuill from "react-quill";
+import NativeSelect from "@material-ui/core/NativeSelect";
+import Editor from "../Editor/Editor";
 
 const topic = [
   "Những lĩnh vực khác",
@@ -45,6 +61,10 @@ const options = [
   { value: "chocolate", label: "Chocolate" },
   { value: "strawberry", label: "Strawberry" },
   { value: "vanilla", label: "Vanilla" },
+  { value: "vanilla", label: "Vanilla" },
+  { value: "vanilla", label: "Vanilla" },
+  { value: "vanilla", label: "Vanilla" },
+  { value: "vanilla", label: "Vanilla" },
 ];
 
 export default function QuestionModal(props) {
@@ -54,6 +74,12 @@ export default function QuestionModal(props) {
   const [detailQuestion, setDetailQuestion] = useState();
   const [tagOption, setTagOption] = useState(null);
   const [topicQuestion, setTopicQuestion] = useState("");
+
+  const [checkedBox, setCheckedBox] = useState(false);
+
+  const handleChange = () => {
+    setCheckedBox(!checkedBox);
+  };
 
   function handleQuestion(v) {
     setQuestion(v);
@@ -83,9 +109,9 @@ export default function QuestionModal(props) {
 
   return (
     <div>
-      <Modal.Body>
-        <Form>
-          <Form.Group className="my-2 d-flex justify-content-between align-items-center">
+      <DialogContent dividers>
+        <form>
+          <FormGroup className="my-2 d-flex justify-content-between align-items-center flex-row">
             <div className="d-flex align-items-center">
               <img
                 height="40"
@@ -96,14 +122,34 @@ export default function QuestionModal(props) {
               />
             </div>
             <div>
-              <Form.Control as="select" onChange={handleTopicChange}>
+              <FormControl>
+                <NativeSelect>
+                  {topic.map((e) => {
+                    return <option key={e}>{e}</option>;
+                  })}
+                </NativeSelect>
+              </FormControl>
+              {/* <FormControl as="select" onChange={handleTopicChange}>
                 {topic.map((e) => {
                   return <option key={e}>{e}</option>;
                 })}
-              </Form.Control>
+              </FormControl> */}
             </div>
-          </Form.Group>
-          <Form.Group className="my-3">
+          </FormGroup>
+          <FormControl fullWidth={true} className="my-3">
+            <InputLabel className="font-weight-bold" htmlFor="my-input">
+              Câu hỏi
+            </InputLabel>
+            <Input
+              id="my-input"
+              aria-describedby="my-helper-text"
+              label="Outlined"
+              variant="outlined"
+              placeholder="Bắt đầu bằng câu hỏi tại sao vì sao ..."
+            />
+          </FormControl>
+
+          {/* <Form.Group className="my-3">
             <Form.Label className="font-weight-bold">
               Câu hỏi
               <span style={{ color: "#f2ba49" }}> *</span>
@@ -114,45 +160,52 @@ export default function QuestionModal(props) {
               placeholder="Bắt đầu bằng câu hỏi tại sao vì sao ..."
               onChange={handleQuestion}
             />
-          </Form.Group>
-          <Form.Group className="my-3">
-            <Form.Label className="font-weight-bold">
-              Chi tiết câu hỏi
-            </Form.Label>
+          </Form.Group> */}
+          <FormControl fullWidth={true} className="my-3">
+            <span className="font-weight-bold">Chi tiết câu hỏi</span>
+
             <ReactQuill
               theme="snow"
               value={detailQuestion || ""}
               onChange={handleDetailQuestion}
             />
             {/* <Editor
-                value={detailQuestion || ""}
-                onChange={handleDetailQuestion}
-              /> */}
-          </Form.Group>
-          <Form.Group className="my-3">
-            <Form.Label className="font-weight-bold">
+              value={detailQuestion || ""}
+              onChange={handleDetailQuestion}
+            /> */}
+          </FormControl>
+          <FormControl fullWidth={true} className="my-3">
+            <span className="font-weight-bold" htmlFor="my-input">
               {`Thêm chủ đề trong lĩnh vực ${topicQuestion}`}
-            </Form.Label>
+            </span>
             <Select
               defaultValue={tagOption}
               onChange={handleTagChange}
               options={options}
-              isMulti={true}
+              multiple
+              labelId="demo-mutiple-checkbox-label"
+              id="demo-mutiple-checkbox"
             />
-          </Form.Group>
-          <Form.Group className="my-3">
-            <Form.Check
-              type={"checkbox"}
-              id={`default-checkbox`}
-              label={`Cho phép trả lời bằng hình thức thu âm`}
+          </FormControl>
+          <FormControl fullWidth={true} className="my-3">
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={checkedBox}
+                  onChange={handleChange}
+                  name="checkedB"
+                  color="primary"
+                />
+              }
+              label="Ghi nhớ mật khẩu"
             />
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
+          </FormControl>
+        </form>
+      </DialogContent>
+      <DialogActions>
         <div className="text-right mt-3">
           <Button
-            variant="secondary"
+            variant="contained"
             onClick={handleClose}
             style={{ width: "80px" }}
             className="mr-2 btn-light"
@@ -160,7 +213,7 @@ export default function QuestionModal(props) {
             Hủy
           </Button>
           <Button
-            variant="primary"
+            variant="contained"
             type="submit"
             onClick={onSubmitForm}
             style={{
@@ -173,7 +226,7 @@ export default function QuestionModal(props) {
             Tiếp
           </Button>
         </div>
-      </Modal.Footer>
+      </DialogActions>
     </div>
   );
 }

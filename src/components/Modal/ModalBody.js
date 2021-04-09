@@ -1,6 +1,7 @@
 import React from "react";
 import "quill/dist/quill.snow.css";
 import { Modal } from "react-bootstrap";
+import { Dialog, DialogTitle } from "@material-ui/core";
 // import Editor from "../Editor/Editor";
 import "./modalBody.css";
 import QuestionModal from "./QuestionModal";
@@ -33,15 +34,15 @@ export default function ModalBody(props) {
   // }
 
   return (
-    <Modal show={show} onHide={handleClose} dialogClassName="login">
-      <Modal.Header closeButton>
+    <Dialog open={show} onClose={handleClose}>
+      <DialogTitle onClose={handleClose}>
         <Modal.Title>{modalTitle}</Modal.Title>
-      </Modal.Header>
+      </DialogTitle>
       {modalType === "postQuestion" && (
         <QuestionModal handleClose={handleClose} />
       )}
       {modalType === "login" && <LoginModal />}
       {modalType === "register" && <RegisterModal />}
-    </Modal>
+    </Dialog>
   );
 }

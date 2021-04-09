@@ -8,6 +8,7 @@ import {
   FormHelperText,
   FormControlLabel,
   Checkbox,
+  DialogContent,
 } from "@material-ui/core";
 
 export default function LoginModal() {
@@ -18,59 +19,55 @@ export default function LoginModal() {
   };
   return (
     <div>
-      <Modal.Body>
-        <div className="p-3">
-          <form>
-            <FormControl fullWidth={true}>
-              <InputLabel htmlFor="my-input">Email address</InputLabel>
-              <Input
-                id="my-input"
-                aria-describedby="my-helper-text"
-                label="Outlined"
-                variant="outlined"
-              />
-              <FormHelperText id="my-helper-text">
-                We'll never share your email.
-              </FormHelperText>
-            </FormControl>
-            <FormControl fullWidth={true}>
-              <InputLabel htmlFor="my-input">Password</InputLabel>
-              <Input
-                id="my-input"
-                aria-describedby="my-helper-text"
-                label="Outlined"
-                variant="outlined"
-                type="password"
-              />
-              <FormHelperText id="my-helper-text">
-                We'll never share your email.
-              </FormHelperText>
-            </FormControl>
-            <FormControl fullWidth={true}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={checkedBox}
-                    onChange={handleChange}
-                    name="checkedB"
-                    color="primary"
-                  />
-                }
-                label="Ghi nhớ mật khẩu"
-              />
-            </FormControl>
-            <FormControl className="float-right">
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                className="mb-3 float-right"
-              >
-                Đăng nhập
-              </Button>
-            </FormControl>
-          </form>
-          {/* <Form>
+      <DialogContent dividers>
+        <form>
+          <FormControl fullWidth={true}>
+            <InputLabel htmlFor="my-input">Email address</InputLabel>
+            <Input
+              id="my-input"
+              aria-describedby="my-helper-text"
+              label="Outlined"
+              variant="outlined"
+            />
+            <FormHelperText id="my-helper-text">
+              We'll never share your email.
+            </FormHelperText>
+          </FormControl>
+          <FormControl fullWidth={true}>
+            <InputLabel htmlFor="my-input">Password</InputLabel>
+            <Input
+              id="my-input"
+              aria-describedby="my-helper-text"
+              label="Outlined"
+              variant="outlined"
+              type="password"
+            />
+          </FormControl>
+          <FormControl fullWidth={true}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={checkedBox}
+                  onChange={handleChange}
+                  name="checkedB"
+                  color="primary"
+                />
+              }
+              label="Ghi nhớ mật khẩu"
+            />
+          </FormControl>
+          <FormControl className="float-right">
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              className="mb-3 float-right"
+            >
+              Đăng nhập
+            </Button>
+          </FormControl>
+        </form>
+        {/* <Form>
             <Form.Group controlId="formBasicEmail">
               <Form.Control type="email" placeholder="Nhập email" />
               <Form.Text className="text-muted">
@@ -96,8 +93,7 @@ export default function LoginModal() {
               Đăng nhập
             </Button>
           </Form> */}
-        </div>
-      </Modal.Body>
+      </DialogContent>
     </div>
   );
 }

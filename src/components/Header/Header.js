@@ -9,6 +9,7 @@ export default function Header(props) {
     onShowPostQuestionModal,
     onShowLoginModal,
     onShowRegisterModal,
+    onShowArticleModal,
   } = props;
   return (
     <nav
@@ -26,6 +27,7 @@ export default function Header(props) {
               onShowPostQuestionModal={onShowPostQuestionModal}
               onShowLoginModal={onShowLoginModal}
               onShowRegisterModal={onShowRegisterModal}
+              onShowArticleModal={onShowArticleModal}
             />
           </div>
         </div>

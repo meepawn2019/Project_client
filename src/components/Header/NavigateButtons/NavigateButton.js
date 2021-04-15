@@ -1,12 +1,13 @@
 import React from "react";
 import styles from "./NavigateButton.module.css";
-import { Dropdown, Button } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
 
 export default function NavigateButton(props) {
   const {
     onShowPostQuestionModal,
     onShowLoginModal,
     onShowRegisterModal,
+    onShowArticleModal,
   } = props;
   return (
     <div className="my-2 my-lg-0 d-flex align-items-center justify-content-between">
@@ -17,7 +18,10 @@ export default function NavigateButton(props) {
         >
           Đặt câu hỏi
         </button>
-        <button className={`buttonMain ${styles["button--light"]} mr-3`}>
+        <button
+          className={`buttonMain ${styles["button--light"]} mr-3`}
+          onClick={onShowArticleModal}
+        >
           Viết bài
         </button>
       </div>

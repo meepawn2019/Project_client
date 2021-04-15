@@ -1,13 +1,10 @@
 import React, { useState } from "react";
-import { Form, Modal } from "react-bootstrap";
 import {
   Button,
   FormControl,
   FormGroup,
   InputLabel,
   Input,
-  TextField,
-  FormHelperText,
   FormControlLabel,
   Checkbox,
   DialogContent,
@@ -18,6 +15,7 @@ import {
 import ReactQuill from "react-quill";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import Editor from "../Editor/Editor";
+import "./questionModal.css";
 
 const topic = [
   "Những lĩnh vực khác",
@@ -110,7 +108,7 @@ export default function QuestionModal(props) {
   return (
     <div>
       <DialogContent dividers>
-        <form>
+        <form className="question-form">
           <FormGroup className="my-2 d-flex justify-content-between align-items-center flex-row">
             <div className="d-flex align-items-center">
               <img

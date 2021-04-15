@@ -131,3 +131,7 @@ a.socialIcon:hover,
   transition: all 0.8s;
   transition: all 0.8s;
 }
+
+.big-modal .MuiDialog-paper {
+  height: 900px;
+}

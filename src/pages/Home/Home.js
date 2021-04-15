@@ -28,6 +28,12 @@ export default function Home() {
     setShow(true);
   };
 
+  const onShowArticleModal = () => {
+    setModalTitle("Viết Bài");
+    setModalType("article");
+    setShow(true);
+  };
+
   return (
     <div>
       <Header
@@ -35,6 +41,7 @@ export default function Home() {
         onShowPostQuestionModal={onShowPostQuestionModal}
         onShowLoginModal={onShowLoginModal}
         onShowRegisterModal={onShowRegisterModal}
+        onShowArticleModal={onShowArticleModal}
       />
       <ModalBody
         show={show}

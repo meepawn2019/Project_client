@@ -1,24 +1,16 @@
 import { useEffect, useState } from "react";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import axios from "axios";
 import QuestionCard from "../../components/QuestionCard/QuestionCard";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 const useStyles = makeStyles((theme) => ({
   home: {
-    backgroundColor: "rgb(243, 243, 240)",
-    paddingTop: "100px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    [theme.breakpoints.down(500)]: {
-      paddingTop: "90px",
-    },
+    marginTop: "20px",
   },
 }));
 
-// const temp = Array(10).fill({question:'How are you?', owner:'Huy'});
-
-export default function Home() {
+const temp = Array(10).fill({ question: "How are you?", owner: "Huy" });
+export default function Questions() {
   const classes = useStyles();
 
   const [questions, setQuestions] = useState([]);
@@ -36,13 +28,9 @@ export default function Home() {
   return (
     <div className={classes.home}>
       {!loading ? (
-        questions.length > 0 ? (
-          questions.map((question, index) => (
-            <QuestionCard key={index} question={question} />
-          ))
-        ) : (
-          <div>Khong co gi</div>
-        )
+        questions.length>0? (questions.map((question, index) => (
+          <QuestionCard key={index} question={question} />
+        ))): (<div>Khong co gi</div>)
       ) : (
         <CircularProgress />
       )}

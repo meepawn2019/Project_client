@@ -24,6 +24,7 @@ export default function Home() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
 
+<<<<<<< HEAD
   useEffect(() => {
     axios
       .get("/getQuestions")
@@ -46,6 +47,29 @@ export default function Home() {
       ) : (
         <CircularProgress />
       )}
+=======
+  const onShowArticleModal = () => {
+    setModalTitle("Viết Bài");
+    setModalType("article");
+    setShow(true);
+  };
+
+  return (
+    <div>
+      <Header
+        onShowModal={handleShow}
+        onShowPostQuestionModal={onShowPostQuestionModal}
+        onShowLoginModal={onShowLoginModal}
+        onShowRegisterModal={onShowRegisterModal}
+        onShowArticleModal={onShowArticleModal}
+      />
+      <ModalBody
+        show={show}
+        handleClose={handleClose}
+        modalType={modalType}
+        modalTitle={modalTitle}
+      />
+>>>>>>> e92137a5c26f9e39b724bb7131ae8903eb156400
     </div>
   );
 }

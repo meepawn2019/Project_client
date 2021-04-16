@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Editor from "./Editor/Editor";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Button } from "@material-ui/core";
+import "./answerCard.css";
 
 const useStyles = makeStyles({
   container: {
@@ -25,7 +26,7 @@ export default function AnswerCard() {
   const classes = useStyles();
 
   return (
-    <div className={classes.container}>
+    <div className={`${classes.container} answer`}>
       <Editor value={detailAnswer || ""} onChange={handleDetailAnswer} />
       <Button
         className={classes.buttonMain}

@@ -26,7 +26,7 @@ const useStyles = makeStyles({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    width: "60%",
+    width: "40%",
     flex: "1 1 auto",
   },
 
@@ -42,7 +42,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function FormPasswordReset(props) {
+export default function ChangePassword(props) {
   const [passChangeSuccess, setPassChangeSuccess] = useState(false);
   const classes = useStyles();
   const handleModalClose = () => {

@@ -5,7 +5,7 @@ import PrimarySearchAppBar from "./components/NavBar/NavBar";
 import Setting from "./pages/Setting";
 import Question from "./pages/Question/Question";
 import AuthContext from "./appContext";
-import ForgotPasswords from "./pages/ForgotPassword/ForgotPassword";
+import ChangePassword from "./pages/ChangePassword/ChangePassword";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         <Route path="/profile" component={Profile}></Route>
         <Route path="/setting" component={Setting}></Route>
         <Route path="/question/:id" component={Question}></Route>
-        <Route path="/forgot" component={ForgotPasswords}></Route>
+        <Route path="/changepassword" component={ChangePassword}></Route>
       </Switch>
     </Router>
     // </AuthContext.Provider>

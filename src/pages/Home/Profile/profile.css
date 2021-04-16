@@ -60,18 +60,6 @@
   text-align: center;
 }
 
-/* a:link,
-a:visited {
-  color: #6c757d;
-  font-size: 14px;
-}
-
-a:hover {
-  color: #f2ba49;
-  background-color: transparent;
-  text-decoration: underline;
-} */
-
 .active {
   color: #f2ba49;
   border-bottom: 3px solid #f2ba49;

@@ -26,14 +26,6 @@ code {
   padding-bottom: 8px;
 }
 
-/* .ql-editor {
-  min-height: 300px !important;
-  max-height: 300px;
-  overflow: hidden;
-  overflow-y: scroll;
-  overflow-x: scroll;
-} */
-
 @media only screen and (min-width: 992px) {
   .modal-dialog {
     max-width: 800px !important;

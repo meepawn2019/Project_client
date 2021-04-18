@@ -6,6 +6,8 @@ import Setting from "./pages/Setting";
 import Question from "./pages/Question/Question";
 import AuthContext from "./appContext";
 import ChangePassword from "./pages/ChangePassword/ChangePassword";
+import QuestionModal from "./components/Modal/QuestionModal";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
@@ -19,6 +21,7 @@ function App() {
         <Route path="/setting" component={Setting}></Route>
         <Route path="/question/:id" component={Question}></Route>
         <Route path="/changepassword" component={ChangePassword}></Route>
+        <Route path="/postquestion" component={QuestionModal}></Route>
       </Switch>
     </Router>
     // </AuthContext.Provider>

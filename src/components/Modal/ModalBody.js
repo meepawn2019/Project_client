@@ -11,28 +11,6 @@ import ArticleModal from "./ArticleModal";
 export default function ModalBody(props) {
   const { show, handleClose, modalType, modalTitle } = props;
 
-  // if (modalType === "postQuestion") {
-  //   return (
-  //     <Modal show={show} onHide={handleClose}>
-  //       <Modal.Header closeButton>
-  //         <Modal.Title>{modalTitle}</Modal.Title>
-  //       </Modal.Header>
-  //       <QuestionModal handleClose={handleClose} />
-  //     </Modal>
-  //   );
-  // }
-
-  // if (modalType === "login") {
-  //   return (
-  //     <Modal show={show} onHide={handleClose} dialogClassName="login">
-  //       <Modal.Header closeButton>
-  //         <Modal.Title>{modalTitle}</Modal.Title>
-  //       </Modal.Header>
-  //       <LoginModal />
-  //     </Modal>
-  //   );
-  // }
-
   return (
     <Dialog
       open={show}
@@ -47,12 +25,10 @@ export default function ModalBody(props) {
       <DialogTitle onClose={handleClose}>
         <Modal.Title>{modalTitle}</Modal.Title>
       </DialogTitle>
-      {modalType === "postQuestion" && (
-        <QuestionModal handleClose={handleClose} />
-      )}
-      {modalType === "login" && <LoginModal />}
+      <QuestionModal handleClose={handleClose} />
+      {/* {modalType === "login" && <LoginModal />}
       {modalType === "register" && <RegisterModal />}
-      {modalType === "article" && <ArticleModal handleClose={handleClose} />}
+      {modalType === "article" && <ArticleModal handleClose={handleClose} />} */}
     </Dialog>
   );
 }

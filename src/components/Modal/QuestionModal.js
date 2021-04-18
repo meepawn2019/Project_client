@@ -7,15 +7,14 @@ import {
   Input,
   FormControlLabel,
   Checkbox,
-  DialogContent,
-  DialogActions,
   Select,
 } from "@material-ui/core";
 // import Select from "react-select";
-import ReactQuill from "react-quill";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import Editor from "../Editor/Editor";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 import "./questionModal.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const topic = [
   "Những lĩnh vực khác",
@@ -65,6 +64,25 @@ const options = [
   { value: "vanilla", label: "Vanilla" },
 ];
 
+const useStyles = makeStyles({
+  root: {
+    position: "absolute",
+    top: "100px",
+  },
+  center: {
+    width: "80%",
+    marginLeft: "10%",
+  },
+  questionForm: {
+    "& .ql-editor": {
+      minHeight: "300px !important",
+      maxHeight: "300px",
+      overflow: "hidden",
+      overflowY: "scroll",
+    },
+  },
+});
+
 export default function QuestionModal(props) {
   const { handleClose } = props;
   const [formData, setFormData] = useState({});
@@ -74,6 +92,8 @@ export default function QuestionModal(props) {
   const [topicQuestion, setTopicQuestion] = useState("");
 
   const [checkedBox, setCheckedBox] = useState(false);
+
+  const classes = useStyles();
 
   const handleChange = () => {
     setCheckedBox(!checkedBox);
@@ -106,125 +126,109 @@ export default function QuestionModal(props) {
   }
 
   return (
-    <div>
-      <DialogContent dividers>
-        <form className="question-form">
-          <FormGroup className="my-2 d-flex justify-content-between align-items-center flex-row">
-            <div className="d-flex align-items-center">
-              <img
-                height="40"
-                width="40"
-                src="/customer_avatar.png"
-                className="rounded-circle"
-                alt="avatar default"
-              />
-            </div>
-            <div>
-              <FormControl>
-                <NativeSelect>
-                  {topic.map((e) => {
-                    return <option key={e}>{e}</option>;
-                  })}
-                </NativeSelect>
-              </FormControl>
-              {/* <FormControl as="select" onChange={handleTopicChange}>
+    <div className={classes.root}>
+      <form className={`${classes.center} ${classes.questionForm}`}>
+        <FormGroup className="my-2 d-flex justify-content-between align-items-center flex-row">
+          <div className="d-flex align-items-center">
+            <img
+              height="40"
+              width="40"
+              src="/customer_avatar.png"
+              className="rounded-circle"
+              alt="avatar default"
+            />
+          </div>
+          <div>
+            <FormControl>
+              <NativeSelect>
+                {topic.map((e) => {
+                  return <option key={e}>{e}</option>;
+                })}
+              </NativeSelect>
+            </FormControl>
+            {/* <FormControl as="select" onChange={handleTopicChange}>
                 {topic.map((e) => {
                   return <option key={e}>{e}</option>;
                 })}
               </FormControl> */}
-            </div>
-          </FormGroup>
-          <FormControl fullWidth={true} className="my-3">
-            <InputLabel className="font-weight-bold" htmlFor="my-input">
-              Câu hỏi
-            </InputLabel>
-            <Input
-              id="my-input"
-              aria-describedby="my-helper-text"
-              label="Outlined"
-              variant="outlined"
-              placeholder="Bắt đầu bằng câu hỏi tại sao vì sao ..."
-            />
-          </FormControl>
+          </div>
+        </FormGroup>
+        <FormControl fullWidth={true} className="my-3">
+          <InputLabel className="font-weight-bold" htmlFor="my-input">
+            Câu hỏi
+          </InputLabel>
+          <Input
+            id="my-input"
+            aria-describedby="my-helper-text"
+            label="Outlined"
+            variant="outlined"
+            placeholder="Bắt đầu bằng câu hỏi tại sao vì sao ..."
+          />
+        </FormControl>
 
-          {/* <Form.Group className="my-3">
-            <Form.Label className="font-weight-bold">
-              Câu hỏi
-              <span style={{ color: "#f2ba49" }}> *</span>
-            </Form.Label>
-            <Form.Control
-              as="input"
-              type="text"
-              placeholder="Bắt đầu bằng câu hỏi tại sao vì sao ..."
-              onChange={handleQuestion}
-            />
-          </Form.Group> */}
-          <FormControl fullWidth={true} className="my-3">
-            <span className="font-weight-bold">Chi tiết câu hỏi</span>
+        <FormControl fullWidth={true} className="my-3">
+          <span className="font-weight-bold">Chi tiết câu hỏi</span>
 
-            <ReactQuill
+          {/* <ReactQuill
               theme="snow"
               value={detailQuestion || ""}
               onChange={handleDetailQuestion}
-            />
-            {/* <Editor
-              value={detailQuestion || ""}
-              onChange={handleDetailQuestion}
             /> */}
-          </FormControl>
-          <FormControl fullWidth={true} className="my-3">
-            <span className="font-weight-bold" htmlFor="my-input">
-              {`Thêm chủ đề trong lĩnh vực ${topicQuestion}`}
-            </span>
-            <Select
-              defaultValue={tagOption}
-              onChange={handleTagChange}
-              options={options}
-              multiple
-              labelId="demo-mutiple-checkbox-label"
-              id="demo-mutiple-checkbox"
-            />
-          </FormControl>
-          <FormControl fullWidth={true} className="my-3">
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={checkedBox}
-                  onChange={handleChange}
-                  name="checkedB"
-                  color="primary"
-                />
-              }
-              label="Ghi nhớ mật khẩu"
-            />
-          </FormControl>
-        </form>
-      </DialogContent>
-      <DialogActions>
-        <div className="text-right mt-3">
-          <Button
-            variant="contained"
-            onClick={handleClose}
-            style={{ width: "80px" }}
-            className="mr-2 btn-light"
-          >
-            Hủy
-          </Button>
-          <Button
-            variant="contained"
-            type="submit"
-            onClick={onSubmitForm}
-            style={{
-              width: "140px",
-              background: "rgb(241, 185, 84)",
-              borderColor: "rgb(241, 185, 84)",
-            }}
-            className="ml-1"
-          >
-            Tiếp
-          </Button>
-        </div>
-      </DialogActions>
+          <Editor
+            value={detailQuestion || ""}
+            onChange={handleDetailQuestion}
+          />
+        </FormControl>
+        <FormControl fullWidth={true} className="my-3">
+          <span className="font-weight-bold" htmlFor="my-input">
+            {`Thêm chủ đề trong lĩnh vực ${topicQuestion}`}
+          </span>
+          <Select
+            defaultValue={tagOption}
+            onChange={handleTagChange}
+            options={options}
+            multiple
+            labelId="demo-mutiple-checkbox-label"
+            id="demo-mutiple-checkbox"
+          />
+        </FormControl>
+        <FormControl fullWidth={true} className="my-3">
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={checkedBox}
+                onChange={handleChange}
+                name="checkedB"
+                color="primary"
+              />
+            }
+            label="Ghi nhớ mật khẩu"
+          />
+        </FormControl>
+      </form>
+      <div className={`${classes.center} text-right mt-3`}>
+        <Button
+          variant="contained"
+          onClick={handleClose}
+          style={{ width: "80px" }}
+          className="mr-2 btn-light"
+        >
+          Hủy
+        </Button>
+        <Button
+          variant="contained"
+          type="submit"
+          onClick={onSubmitForm}
+          style={{
+            width: "140px",
+            background: "rgb(241, 185, 84)",
+            borderColor: "rgb(241, 185, 84)",
+          }}
+          className="ml-1"
+        >
+          Tiếp
+        </Button>
+      </div>
     </div>
   );
 }

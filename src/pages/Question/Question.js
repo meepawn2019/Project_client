@@ -13,7 +13,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
 import Badge from "@material-ui/core/Badge";
-import Divider from "@material-ui/core/Divider";
+// import Divider from "@material-ui/core/Divider";
 //icon
 import ShareIcon from "@material-ui/icons/Share";
 import MoreVert from "@material-ui/icons/MoreVert";
@@ -86,7 +86,7 @@ export default function Question() {
         setError(true);
         setLoading(false);
       });
-  }, []);
+  }, [id]);
   console.log(question);
   //   return <div></div>;
   return loading ? (

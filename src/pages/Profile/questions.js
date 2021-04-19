@@ -9,28 +9,46 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const temp = Array(10).fill({ question: "How are you?", owner: "Huy" });
-export default function Questions() {
+export default function Questions(props) {
   const classes = useStyles();
-
+  const userId = props.userId;
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    axios
-      .get("/getQuestions")
-      .then((val) => {
-        setQuestions(val.data.questions);
-        setLoading(false);
-      }, [])
-      .catch((e) => []);
-  }, []);
+    if (!userId) {
+      axios
+        .get("/getQuestions")
+        .then((val) => {
+          setQuestions(val.data.questions);
+          setLoading(false);
+        }, [])
+        .catch((e) => setError(true));
+    } else {
+      axios
+        .get(`/getQuestionsByUserId/${userId}`)
+        .then((val) => {
+          setQuestions(val.data.questions);
+          setLoading(false);
+        }, [])
+        .catch((e) => {
+          setError(true);
+        });
+    }
+  }, [userId]);
   return (
     <div className={classes.home}>
       {!loading ? (
-        questions.length>0? (questions.map((question, index) => (
-          <QuestionCard key={index} question={question} />
-        ))): (<div>Khong co gi</div>)
+        error ? (
+          <div>Error</div>
+        ) : questions.length > 0 ? (
+          questions.map((question, index) => (
+            <QuestionCard key={index} question={question} />
+          ))
+        ) : (
+          <div>Khong co gi</div>
+        )
       ) : (
         <CircularProgress />
       )}

@@ -135,3 +135,6 @@ a.socialIcon:hover,
 .big-modal .MuiDialog-paper {
   height: 900px;
 }
+.small-modal .MuiDialog-paper {
+  width: 400px;
+}

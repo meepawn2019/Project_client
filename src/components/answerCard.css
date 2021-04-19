@@ -1,0 +1,6 @@
+.answer .ql-editor {
+  min-height: 300px !important;
+  max-height: 300px;
+  overflow: hidden;
+  overflow-y: scroll;
+}

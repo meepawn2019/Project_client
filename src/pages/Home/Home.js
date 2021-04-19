@@ -3,6 +3,7 @@ import axios from "axios";
 import QuestionCard from "../../components/QuestionCard/QuestionCard";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import AnswerCard from "../../components/AnswerCard";
 const useStyles = makeStyles((theme) => ({
   home: {
     backgroundColor: "rgb(243, 243, 240)",
@@ -44,6 +45,7 @@ export default function Home() {
       ) : (
         <CircularProgress />
       )}
+      <AnswerCard />
     </div>
   );
 }

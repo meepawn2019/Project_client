@@ -41,7 +41,7 @@ export default function ModalBody(props) {
       className={
         modalType === "article" || modalType === "postQuestion"
           ? "big-modal"
-          : ""
+          : "small-modal"
       }
     >
       <DialogTitle onClose={handleClose}>

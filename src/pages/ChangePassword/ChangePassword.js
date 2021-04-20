@@ -210,7 +210,7 @@ export default function ChangePassword(props) {
               </FormControl>
               <Button
                 type="submit"
-                variant="raised"
+                variant="contained"
                 color="primary"
                 disabled={Boolean(!isValid || isSubmitting)}
                 style={{ margin: "16px" }}

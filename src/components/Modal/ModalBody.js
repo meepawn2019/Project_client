@@ -1,20 +1,44 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "quill/dist/quill.snow.css";
 import { Modal } from "react-bootstrap";
 import { Dialog, DialogTitle } from "@material-ui/core";
 import "./modalBody.css";
-import QuestionModal from "./QuestionModal";
 import LoginModal from "./LoginModal";
-import RegisterModal from "./RegisterModal";
-import ArticleModal from "./ArticleModal";
 
 export default function ModalBody(props) {
-  const { show, handleClose, modalType, modalTitle } = props;
+  const { show, handleClose } = props;
+  const [modalType, setModalType] = useState();
+  const [title, setTitle] = useState("Login");
+
+  useEffect(() => {
+    setModalType("login");
+  }, []);
+
+  const closeDialog = () => {
+    handleClose();
+    setModalType("login");
+    setTitle("Login");
+  };
+
+  const handleRegisterClick = () => {
+    setModalType("register");
+    setTitle("Register");
+  };
+
+  const handleLoginClick = () => {
+    setModalType("login");
+    setTitle("Login");
+  };
+
+  const handleForgotClick = () => {
+    setModalType("forgot");
+    setTitle("Forgot Password");
+  };
 
   return (
     <Dialog
       open={show}
-      onClose={handleClose}
+      onClose={closeDialog}
       maxWidth={"lg"}
       className={
         modalType === "article" || modalType === "postQuestion"
@@ -22,13 +46,16 @@ export default function ModalBody(props) {
           : "small-modal"
       }
     >
-      <DialogTitle onClose={handleClose}>
-        <Modal.Title>{modalTitle}</Modal.Title>
+      <DialogTitle onClose={closeDialog}>
+        <Modal.Title>{title}</Modal.Title>
       </DialogTitle>
-      <QuestionModal handleClose={handleClose} />
-      {/* {modalType === "login" && <LoginModal />}
-      {modalType === "register" && <RegisterModal />}
-      {modalType === "article" && <ArticleModal handleClose={handleClose} />} */}
+      <LoginModal
+        modalType={modalType}
+        handleRegisterClick={handleRegisterClick}
+        handleLoginClick={handleLoginClick}
+        handleForgotClick={handleForgotClick}
+      />
+      {/* {modalType === "register" && <RegisterModal />} */}
     </Dialog>
   );
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -16,6 +16,7 @@ import AskQuestion from "./AskQuestion";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import Slide from "@material-ui/core/Slide";
 import authContext from "../../../src/appContext";
+import ModalBody from "../Modal/ModalBody";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -119,6 +120,11 @@ export default function PrimarySearchAppBar() {
   const [modalShow, setModalShow] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => {
+    setShow(false);
+  };
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -129,7 +135,7 @@ export default function PrimarySearchAppBar() {
   };
   const logIn = (event) => {
     handleMenuClose();
-    alert("LogIn");
+    setShow(true);
   };
 
   const handleProfileMenuOpen = (event) => {
@@ -227,7 +233,7 @@ export default function PrimarySearchAppBar() {
         <AppBar color="default">
           <Toolbar>
             <IconButton component={Link} to="/">
-              <img src="/logo.png" className={classes.logo} alt='avatar'></img>
+              <img src="/logo.png" className={classes.logo} alt="avatar"></img>
             </IconButton>
 
             <div className={classes.search}>
@@ -295,6 +301,7 @@ export default function PrimarySearchAppBar() {
       </HideOnScroll>
       {renderMobileMenu}
       {renderMenu}
+      <ModalBody show={show} handleClose={handleClose} />
     </div>
   );
 }

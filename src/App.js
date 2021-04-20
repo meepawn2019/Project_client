@@ -7,7 +7,6 @@ import Question from "./pages/Question/Question";
 import AuthContext from "./appContext";
 import ChangePassword from "./pages/ChangePassword/ChangePassword";
 import QuestionModal from "./components/Modal/QuestionModal";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (

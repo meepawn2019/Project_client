@@ -1,5 +1,5 @@
-import React from "react";
-import clsx from "clsx";
+import React, { useEffect } from "react";
+// import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 //com
 import Card from "@material-ui/core/Card";
@@ -14,13 +14,15 @@ import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
 import Collapse from "@material-ui/core/Collapse";
 import Badge from "@material-ui/core/Badge";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Divider from "@material-ui/core/Divider";
 //icon
 import ShareIcon from "@material-ui/icons/Share";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MoreVert from "@material-ui/icons/MoreVert";
 import ThumbUp from "@material-ui/icons/ThumbUp";
 import ThumbDown from "@material-ui/icons/ThumbDown";
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,22 +54,38 @@ const useStyles = makeStyles((theme) => ({
       fontSize: 25,
     },
   },
+  comment:{
+    backgroundColor: 'rgb(245,245,245)'
+  }
 }));
-var comment1 = {
-  user: "Huy",
-  commentAt: new Date().toISOString(),
-  detail: `Thing's just ok`,
-  like: [],
-  dislike: [],
-};
 
-var comments1 = Array(10).fill(comment1);
-export default function RecipeReviewCard(props) {
+export default function QuestionCard(props) {
   const question = props.question;
   const classes = useStyles();
+
   const [expanded, setExpanded] = React.useState(false);
-  const owner = question.owner || "Huy";
-  const date = question.createAt || "September 14, 2016";
+
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(false);
+  const [comments, setComments] = React.useState([]);
+  useEffect(() => {
+    axios
+      .get(`/getCommentsInQuestion/${question.id}`)
+      .then(async (data) => {
+        let quest = data.data.comments;
+        for (let i = 0; i < quest.length; i++) {
+          let user = (await axios.get(`/profile/${quest[i].owner}`)).data.userName;
+          quest[i].owner = user;
+        }
+        setComments(quest);
+        setLoading(false);
+      })
+      .catch((e) => {
+        setError(true);
+        setLoading(false);
+      });
+  }, [question.id]);
+
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -82,8 +100,8 @@ export default function RecipeReviewCard(props) {
             src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
           />
         }
-        title={owner}
-        subheader={date}
+        title={question.owner}
+        subheader={new Date(question.createAt).toLocaleDateString()}
       />
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
@@ -116,7 +134,6 @@ export default function RecipeReviewCard(props) {
             aria-label="Comment"
             onClick={handleExpandClick}
             aria-expanded={expanded}
-            aria-label="show more"
           >
             <Badge badgeContent={question.commentCount || 0} color="secondary">
               <ChatBubbleIcon />
@@ -134,12 +151,14 @@ export default function RecipeReviewCard(props) {
           </IconButton>
         </Tooltip>
       </CardActions>
-
+      <Divider />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {comments1.length <= 0 ? (
+        {loading ? (
+          <CircularProgress />
+        ) : comments.length <= 0 ? (
           <div>No answer yet</div>
         ) : (
-          comments1.map((com, index) => <Comment key={index} comment={com} />)
+          comments.map((com, index) => <Comment key={index} comment={com} />)
         )}
       </Collapse>
     </Card>
@@ -149,10 +168,10 @@ export default function RecipeReviewCard(props) {
 const Comment = (props) => {
   const comment = props.comment;
   const classes = useStyles();
-  const user = comment.user || "Huy";
-  const date = comment.commentAt || "September 14, 2016";
+  let date = new Date(comment.commentAt);
+  comment.commentAt = date.toLocaleDateString();
   return (
-    <Card>
+    <Card className={classes.comment}>
       <CardHeader
         avatar={
           <Avatar
@@ -161,8 +180,8 @@ const Comment = (props) => {
             src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
           />
         }
-        title={user}
-        subheader={date}
+        title={comment.owner}
+        subheader={comment.commentAt}
       />
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
@@ -175,12 +194,16 @@ const Comment = (props) => {
       <CardActions disableSpacing>
         <Tooltip title="Up Vote">
           <IconButton aria-label="like">
-            <ThumbUp />
+            <Badge badgeContent={comment.like.length} color="secondary">
+              <ThumbUp />
+            </Badge>
           </IconButton>
         </Tooltip>
         <Tooltip title="Down Vote">
           <IconButton aria-label="dislike">
-            <ThumbDown />
+            <Badge badgeContent={comment.dislike.length} color="secondary">
+              <ThumbDown />
+            </Badge>
           </IconButton>
         </Tooltip>
 
@@ -195,6 +218,7 @@ const Comment = (props) => {
           </IconButton>
         </Tooltip>
       </CardActions>
+      <Divider />
     </Card>
   );
 };

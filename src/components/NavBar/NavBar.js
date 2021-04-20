@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
+// import Modal from "@material-ui/core/Modal";
 import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MoreIcon from "@material-ui/icons/MoreVert";
@@ -18,6 +19,7 @@ import Slide from "@material-ui/core/Slide";
 import authContext from "../../../src/appContext";
 import ModalBody from "../Modal/ModalBody";
 
+var id = "8jSppc10mmeCNVRKsSx7sKtlEch1";
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
@@ -118,6 +120,7 @@ function HideOnScroll(props) {
 export default function PrimarySearchAppBar() {
   const classes = useStyles();
   const [modalShow, setModalShow] = React.useState(false);
+  const [modalLogInShow, setModalLoginShow] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [show, setShow] = useState(false);
@@ -166,23 +169,19 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose} component={Link} to="/profile">
+      <MenuItem
+        onClick={handleMenuClose}
+        component={Link}
+        to={`/profile/${id}`}
+      >
         Tài khoản của tôi
       </MenuItem>
 
       <MenuItem onClick={handleMenuClose} component={Link} to="/setting">
         Cài đặt
       </MenuItem>
-
-      <authContext.Consumer>
-        {(them) =>
-          !them ? (
-            <MenuItem onClick={logOut}>Đăng xuất</MenuItem>
-          ) : (
-            <MenuItem onClick={logIn}>Đăng nhập</MenuItem>
-          )
-        }
-      </authContext.Consumer>
+      <MenuItem onClick={logOut}>Đăng xuất</MenuItem>
+      <MenuItem onClick={logIn}>Đăng nhập</MenuItem>
     </Menu>
   );
 
@@ -229,6 +228,10 @@ export default function PrimarySearchAppBar() {
         modalShow={modalShow}
         handleClose={() => setModalShow(false)}
       />
+      {/* <RealLoginModal
+        modalLogInShow={modalLogInShow}
+        handleLogInModalClose={handleLogInModalClose}
+      /> */}
       <HideOnScroll>
         <AppBar color="default">
           <Toolbar>

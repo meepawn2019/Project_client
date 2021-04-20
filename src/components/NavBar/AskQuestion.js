@@ -29,7 +29,7 @@ export default function AskQuestionModal(props) {
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
       open={modalShow}
-      backgroundColor="white"
+      backgroundColor="red"
       onClose={handleClose}
     >
       <div className={classes.ask}>

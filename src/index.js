@@ -6,9 +6,10 @@ import axios from 'axios';
 
 axios.defaults.baseURL = 'http://localhost:3001/';
 ReactDOM.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <App />
-  </React.StrictMode>,
+  // </React.StrictMode>
+  ,
   document.getElementById('root')
 );
 

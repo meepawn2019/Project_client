@@ -17,8 +17,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// const temp = Array(10).fill({question:'How are you?', owner:'Huy'});
-
 export default function Home() {
   const classes = useStyles();
 

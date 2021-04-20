@@ -1,11 +1,12 @@
-import React, { useState, useCallback } from "react";
-import { Switch, Route, useLocation } from "react-router-dom";
-import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import SimpleTabs from "./ProfileTab";
-import Questions from "./questions";
+import Questions from "./Questions";
+import axios from "axios";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,18 +49,34 @@ function useQuery() {
 }
 
 export default function Profile() {
-  const user = {
-    userName: "Vu Quang Huy",
-  };
+  const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const classes = useStyles();
-  const path = "/profile";
+  const id = useParams().id;
+  const tab = useQuery().get("tab");
 
-  return (
+  useEffect(() => {
+    axios
+      .get(`/profile/${id}`)
+      .then((data) => {
+        setLoading(false);
+        setUser(data.data);
+      })
+      .catch((e) => setError(true));
+  }, [id]);
+
+  return loading ? (
+    <CircularProgress />
+  ) : error ? (
+    <div>error</div>
+  ) : (
     <div className={classes.root}>
       <div className={classes.coverPhoto}>
         <img
           src="/wp7053694.png"
           style={{ width: "inherit", height: "inherit" }}
+          alt="cover"
         ></img>
         <Avatar
           aria-label="recipe"
@@ -68,15 +85,12 @@ export default function Profile() {
         />
       </div>
 
-      <Typography className={classes.userName}>{user.userName}</Typography>
+      <Typography className={classes.userName}>
+        {user.userName || "Null"}
+      </Typography>
 
-      <SimpleTabs />
-
-      <Switch>
-        {/* <Route exact path={path} component={Answer} /> */}
-
-        <Route path={`${path}`} component={Temp} />
-      </Switch>
+      <SimpleTabs initTab={tab} />
+      <Temp userId={id} />
     </div>
   );
 }
@@ -85,11 +99,12 @@ function Answer({ name }) {
   return <div>{name}</div>;
 }
 
-const Temp = ({ match, location }) => {
+const Temp = (props) => {
   const tab = useQuery().get("tab");
+  const userId = props.userId;
   switch (tab) {
     case "questions":
-      return <Questions />;
+      return <Questions userId={userId} />;
     case "topics":
       return <Answer name="Chủ đề" />;
     case "friends":
@@ -99,12 +114,3 @@ const Temp = ({ match, location }) => {
       return <Answer name="Câu trả lời" />;
   }
 };
-// function (){
-
-// }
-// function (){
-
-// }
-// function (){
-
-// }

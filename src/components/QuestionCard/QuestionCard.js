@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
 // import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 //com
 import Card from "@material-ui/core/Card";
+import MUILink from "@material-ui/core/Link";
 import Tooltip from "@material-ui/core/Tooltip";
 import Box from "@material-ui/core/Box";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -14,7 +16,6 @@ import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
 import Collapse from "@material-ui/core/Collapse";
 import Badge from "@material-ui/core/Badge";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import Divider from "@material-ui/core/Divider";
 //icon
 import ShareIcon from "@material-ui/icons/Share";
@@ -22,7 +23,6 @@ import MoreVert from "@material-ui/icons/MoreVert";
 import ThumbUp from "@material-ui/icons/ThumbUp";
 import ThumbDown from "@material-ui/icons/ThumbDown";
 import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
-import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,37 +54,17 @@ const useStyles = makeStyles((theme) => ({
       fontSize: 25,
     },
   },
-  comment:{
-    backgroundColor: 'rgb(245,245,245)'
-  }
+  comment: {
+    backgroundColor: "rgb(245,245,245)",
+  },
 }));
 
 export default function QuestionCard(props) {
   const question = props.question;
+  const comments = question.comment;
   const classes = useStyles();
 
   const [expanded, setExpanded] = React.useState(false);
-
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(false);
-  const [comments, setComments] = React.useState([]);
-  useEffect(() => {
-    axios
-      .get(`/getCommentsInQuestion/${question.id}`)
-      .then(async (data) => {
-        let quest = data.data.comments;
-        for (let i = 0; i < quest.length; i++) {
-          let user = (await axios.get(`/profile/${quest[i].owner}`)).data.userName;
-          quest[i].owner = user;
-        }
-        setComments(quest);
-        setLoading(false);
-      })
-      .catch((e) => {
-        setError(true);
-        setLoading(false);
-      });
-  }, [question.id]);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -94,48 +74,40 @@ export default function QuestionCard(props) {
     <Card className={classes.root}>
       <CardHeader
         avatar={
-          <Avatar
-            aria-label="recipe"
-            className={classes.avatar}
-            src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
-          />
+          <MUILink component={Link} to={`/profile/${question.owner.id}`}>
+            <Avatar
+              aria-label="recipe"
+              className={classes.avatar}
+              src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1"
+            />
+          </MUILink>
         }
-        title={question.owner}
+        title={
+          <MUILink component={Link} to={`/profile/${question.owner.id}`}>
+            <p>{question.owner.userName}</p>
+          </MUILink>
+        }
         subheader={new Date(question.createAt).toLocaleDateString()}
       />
-      <CardContent>
-        <Typography variant="body2" color="textSecondary" component="p">
-          <Box className={classes.question} fontWeight="fontWeightBold">
-            {question.question}
-          </Box>
-        </Typography>
-      </CardContent>
+
+      <MUILink component={Link} to={`/question/${question.id}`}>
+        <CardContent>
+          <Typography variant="body2" color="textSecondary" component="p">
+            <Box className={classes.question} fontWeight="fontWeightBold">
+              {question.question}
+            </Box>
+          </Typography>
+        </CardContent>
+      </MUILink>
 
       <CardActions disableSpacing>
-        <Tooltip title="Up Vote">
-          <IconButton aria-label="like">
-            <Badge badgeContent={question.like.length || 0} color="secondary">
-              <ThumbUp />
-            </Badge>
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Down Vote">
-          <IconButton aria-label="dislike">
-            <Badge
-              badgeContent={question.dislike.length || 0}
-              color="secondary"
-            >
-              <ThumbDown />
-            </Badge>
-          </IconButton>
-        </Tooltip>
         <Tooltip title="Trả lời">
           <IconButton
             aria-label="Comment"
             onClick={handleExpandClick}
             aria-expanded={expanded}
           >
-            <Badge badgeContent={question.commentCount || 0} color="secondary">
+            <Badge badgeContent={comments.commentCount || 0} color="secondary">
               <ChatBubbleIcon />
             </Badge>
           </IconButton>
@@ -153,12 +125,12 @@ export default function QuestionCard(props) {
       </CardActions>
       <Divider />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {loading ? (
-          <CircularProgress />
-        ) : comments.length <= 0 ? (
+        {comments.comment.length <= 0 ? (
           <div>No answer yet</div>
         ) : (
-          comments.map((com, index) => <Comment key={index} comment={com} />)
+          comments.comment.map((com, index) => (
+            <Comment key={index} comment={com} />
+          ))
         )}
       </Collapse>
     </Card>
@@ -180,7 +152,7 @@ const Comment = (props) => {
             src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
           />
         }
-        title={comment.owner}
+        title={comment.owner.userName}
         subheader={comment.commentAt}
       />
       <CardContent>

@@ -18,7 +18,7 @@ import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import Slide from "@material-ui/core/Slide";
 import authContext from "../../../src/appContext";
 import ModalBody from "../Modal/ModalBody";
-
+import axios from "axios";
 var id = "8jSppc10mmeCNVRKsSx7sKtlEch1";
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -251,6 +251,13 @@ export default function PrimarySearchAppBar() {
                   input: classes.inputInput,
                 }}
                 inputProps={{ "aria-label": "search" }}
+                onChange={(text) => {
+                  let key = text.target.value;
+                  if (key)
+                    axios(`/findQuestionByKey/${key}`).then((data) =>
+                      console.log(data.data)
+                    );
+                }}
               />
             </div>
             <div className={classes.grow} />

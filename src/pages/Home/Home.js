@@ -3,7 +3,6 @@ import axios from "axios";
 import QuestionCard from "../../components/QuestionCard/QuestionCard";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import AnswerCard from "../../components/AnswerCard";
 const useStyles = makeStyles((theme) => ({
   home: {
     backgroundColor: "rgb(243, 243, 240)",
@@ -22,6 +21,9 @@ export default function Home() {
 
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [errorText, setErrorText] = useState('');
+  
 
   useEffect(() => {
     axios
@@ -30,11 +32,15 @@ export default function Home() {
         setQuestions(val.data.questions);
         setLoading(false);
       }, [])
-      .catch((e) => []);
+      .catch((e) => {
+        setLoading(false);
+        setError(true);
+        setErrorText(e);
+      });
   }, []);
   return (
     <div className={classes.home}>
-      {!loading ? (
+      {!loading ? error?<div>{errorText.message}</div>:(
         questions.length > 0 ? (
           questions.map((question, index) => (
             <QuestionCard key={index} question={question} />
@@ -45,7 +51,6 @@ export default function Home() {
       ) : (
         <CircularProgress />
       )}
-      <AnswerCard />
     </div>
   );
 }

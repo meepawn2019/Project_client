@@ -59,15 +59,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-var comment1 = {
-  user: "Huy",
-  commentAt: new Date().toISOString(),
-  detail: `Thing's just ok`,
-  like: [],
-  dislike: [],
-};
 
-var comments1 = Array(10).fill(comment1);
 export default function Question() {
   let { id } = useParams();
   const classes = useStyles();
@@ -79,16 +71,19 @@ export default function Question() {
     axios
       .get(`getQuestion/${id}`)
       .then((data) => {
-        setQuestion(data.data);
+        let temp = data.data.question;
+        temp.createAt = new Date(temp.createAt).toLocaleDateString();
+        setQuestion(temp);
         setLoading(false);
+        console.log(data.data.question);
       })
       .catch((e) => {
+        console.log(e);
         setError(true);
         setLoading(false);
       });
   }, [id]);
-  console.log(question);
-  //   return <div></div>;
+
   return loading ? (
     <div>Loading</div>
   ) : error ? (
@@ -104,7 +99,7 @@ export default function Question() {
               src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
             />
           }
-          title={question.owner}
+          title={question.owner.userName}
           subheader={question.createAt}
         />
         <CardContent>
@@ -116,27 +111,10 @@ export default function Question() {
         </CardContent>
 
         <CardActions disableSpacing>
-          <Tooltip title="Up Vote">
-            <IconButton aria-label="like">
-              <Badge badgeContent={question.like.length || 0} color="secondary">
-                <ThumbUp />
-              </Badge>
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Down Vote">
-            <IconButton aria-label="dislike">
-              <Badge
-                badgeContent={question.dislike.length || 0}
-                color="secondary"
-              >
-                <ThumbDown />
-              </Badge>
-            </IconButton>
-          </Tooltip>
           <Tooltip title="Trả lời">
             <IconButton aria-label="Comment">
               <Badge
-                badgeContent={question.commentCount || 0}
+                badgeContent={question.comment.commentCount || 0}
                 color="secondary"
               >
                 <ChatBubbleIcon />
@@ -157,10 +135,10 @@ export default function Question() {
       </Card>
       <CommentInput />
       <div>
-        {comments1.length <= 0 ? (
+        {question.comment.comment.length <= 0 ? (
           <div>No answer yet</div>
         ) : (
-          comments1.map((com, index) => {
+          question.comment.comment.map((com, index) => {
             com.user = com.user + index;
             return <Comment key={index} comment={com} />;
           })
@@ -174,7 +152,8 @@ const Comment = (props) => {
   const comment = props.comment;
   const classes = useStyles();
   const user = comment.user || "Huy";
-  const date = comment.commentAt || "September 14, 2016";
+  const date =
+    new Date(comment.commentAt).toLocaleDateString() || "September 14, 2016";
   return (
     <Card className={classes.comment}>
       <CardHeader
@@ -199,12 +178,17 @@ const Comment = (props) => {
       <CardActions disableSpacing>
         <Tooltip title="Up Vote">
           <IconButton aria-label="like">
-            <ThumbUp />
+            <Badge badgeContent={comment.like.length} color="secondary">
+              <ThumbUp />
+            </Badge>
           </IconButton>
         </Tooltip>
+
         <Tooltip title="Down Vote">
           <IconButton aria-label="dislike">
-            <ThumbDown />
+            <Badge badgeContent={comment.dislike.length} color="secondary">
+              <ThumbDown />
+            </Badge>
           </IconButton>
         </Tooltip>
 

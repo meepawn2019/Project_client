@@ -1,8 +1,8 @@
 import Modal from "@material-ui/core/Modal";
-import LoginModal from "../../components/Modal/LoginModal";
+// import LoginModal from "../../components/Modal/LoginModal";
 // import RegisterModal from "../../components/Modal/RegisterModal";
 import QuestionModal from "../../components/Modal/QuestionModal";
-import ArticleModal from "../../components/Modal/ArticleModal";
+// import ArticleModal from "../../components/Modal/ArticleModal";
 
 export default function RealLoginModal({
   modalLogInShow,

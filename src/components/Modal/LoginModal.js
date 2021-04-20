@@ -70,25 +70,18 @@ export default function LoginModal(props) {
           )}
           {modalType === "login" && (
             <FormControl fullWidth={true}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={checkedBox}
-                    onChange={handleChange}
-                    name="checkedB"
-                    color="primary"
-                  />
-                }
-                label="Ghi nhớ mật khẩu"
-              />
-            </FormControl>
-          )}
-          {modalType !== "forgot" && (
-            <FormControl fullWidth={true}>
               <Button
                 style={{ width: "150px" }}
                 onClick={handleForgotClick}
               >{`Quên mật khẩu`}</Button>
+            </FormControl>
+          )}
+          {modalType === "forgot" && (
+            <FormControl className="mb-4 mt-4">
+              <Button
+                style={{ width: "150px" }}
+                onClick={handleLoginClick}
+              >{`Đăng nhập`}</Button>
             </FormControl>
           )}
           {modalType === "login" && (

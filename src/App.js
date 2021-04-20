@@ -7,6 +7,7 @@ import Question from "./pages/Question/Question";
 import AuthContext from "./appContext";
 import ChangePassword from "./pages/ChangePassword/ChangePassword";
 import QuestionModal from "./components/Modal/QuestionModal";
+import Answer from "./pages/Answer/Answer";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/question/:id" component={Question}></Route>
         <Route path="/changepassword" component={ChangePassword}></Route>
         <Route path="/postquestion" component={QuestionModal}></Route>
+        <Route path="/answer/:question" component={Answer}></Route>
       </Switch>
     </Router>
     // </AuthContext.Provider>

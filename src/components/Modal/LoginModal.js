@@ -7,6 +7,7 @@ import {
   FormControlLabel,
   Checkbox,
   DialogContent,
+  TextField,
 } from "@material-ui/core";
 
 export default function LoginModal(props) {
@@ -16,55 +17,132 @@ export default function LoginModal(props) {
     handleForgotClick,
     modalType,
   } = props;
-  const [checkedBox, setCheckedBox] = useState(false);
-  const handleChange = () => {
-    setCheckedBox(!checkedBox);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [repassword, setRePassword] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState({});
+  const [formData, setFormData] = useState({
+    email,
+    password,
+    name,
+  });
+
+  const validate = () => {
+    let temp = {};
+    temp.email =
+      email.length > 0
+        ? /^[^\s@]+@[^\s@]+$/.test(email)
+          ? ""
+          : "Not valid email"
+        : "This field is required";
+    if (modalType === "register") {
+      temp.name = name.length > 0 ? "" : "This field is required";
+    }
+    temp.password = password.length > 0 ? "" : "This field is required";
+    temp.repassword = password === repassword ? "" : "Not match password";
+    setError({ ...temp });
+    return Object.values(temp).every((x) => x === "");
   };
+
+  const registerClick = () => {
+    handleRegisterClick();
+    setError({});
+  };
+
+  const loginClick = () => {
+    handleLoginClick();
+    setError({});
+  };
+
+  const forgotClick = () => {
+    handleForgotClick();
+    setError({});
+  };
+
+  const handleSubmitForm = (e) => {
+    e.preventDefault();
+    if (validate()) {
+      console.log("1");
+    }
+    console.log(error);
+  };
+
+  const handleEmailChange = (v) => {
+    setEmail(v.target.value);
+  };
+  const handleNameChange = (v) => {
+    setName(v.target.value);
+  };
+  const handlePasswordChange = (v) => {
+    setPassword(v.target.value);
+  };
+  const handleRePasswordChange = (v) => {
+    setRePassword(v.target.value);
+  };
+
   return (
     <div>
       <DialogContent dividers>
-        <form>
+        <form onSubmit={handleSubmitForm}>
           <FormControl fullWidth={true} className="mb-4">
-            <InputLabel htmlFor="my-input">Email address</InputLabel>
-            <Input
+            <TextField
               id="my-email"
               aria-describedby="my-helper-text"
-              label="Outlined"
+              label="Email"
               variant="outlined"
+              onChange={handleEmailChange}
+              {...(error.email && {
+                error: true,
+                helperText: error.email,
+              })}
             />
           </FormControl>
           {modalType === "register" && (
             <FormControl fullWidth={true} className="mb-4">
-              <InputLabel htmlFor="my-input">Name</InputLabel>
-              <Input
+              <TextField
                 id="my-name"
                 aria-describedby="my-helper-text"
-                label="Outlined"
+                label="Name"
                 variant="outlined"
+                onChange={handleNameChange}
+                {...(error.name && {
+                  error: true,
+                  helperText: error.name,
+                })}
               />
             </FormControl>
           )}
           {modalType !== "forgot" && (
             <FormControl fullWidth={true} className="mb-4">
-              <InputLabel htmlFor="my-input">Password</InputLabel>
-              <Input
+              <TextField
                 id="my-password"
                 aria-describedby="my-helper-text"
-                label="Outlined"
+                label="Password"
                 variant="outlined"
                 type="password"
+                onChange={handlePasswordChange}
+                {...(error.password && {
+                  error: true,
+                  helperText: error.password,
+                })}
               />
             </FormControl>
           )}{" "}
           {modalType === "register" && (
             <FormControl fullWidth={true} className="mb-4">
-              <InputLabel htmlFor="my-input">Re-Password</InputLabel>
-              <Input
+              <TextField
                 id="my-re-password"
                 aria-describedby="my-helper-text"
-                label="Outlined"
+                label="Re Password"
                 variant="outlined"
                 type="password"
+                onChange={handleRePasswordChange}
+                {...(error.repassword && {
+                  error: true,
+                  helperText: error.repassword,
+                })}
               />
             </FormControl>
           )}
@@ -72,7 +150,7 @@ export default function LoginModal(props) {
             <FormControl fullWidth={true}>
               <Button
                 style={{ width: "150px" }}
-                onClick={handleForgotClick}
+                onClick={forgotClick}
               >{`Quên mật khẩu`}</Button>
             </FormControl>
           )}
@@ -80,14 +158,14 @@ export default function LoginModal(props) {
             <FormControl className="mb-4 mt-4">
               <Button
                 style={{ width: "150px" }}
-                onClick={handleLoginClick}
+                onClick={loginClick}
               >{`Đăng nhập`}</Button>
             </FormControl>
           )}
           {modalType === "login" && (
             <FormControl className="mb-4 mt-4">
               <Button
-                onClick={handleRegisterClick}
+                onClick={registerClick}
                 variant="contained"
                 color="secondary"
               >
@@ -98,7 +176,7 @@ export default function LoginModal(props) {
           {modalType === "register" && (
             <FormControl className="mb-4 mt-4">
               <Button
-                onClick={handleLoginClick}
+                onClick={loginClick}
                 variant="contained"
                 color="secondary"
               >

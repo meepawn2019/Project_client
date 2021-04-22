@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import ReactHtmlParser from 'react-html-parser';
 //com
 import Card from "@material-ui/core/Card";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -75,10 +76,8 @@ export default function Question() {
         temp.createAt = new Date(temp.createAt).toLocaleDateString();
         setQuestion(temp);
         setLoading(false);
-        console.log(data.data.question);
       })
       .catch((e) => {
-        console.log(e);
         setError(true);
         setLoading(false);
       });
@@ -170,7 +169,7 @@ const Comment = (props) => {
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
           <Box className={classes.question} fontWeight="fontWeightBold">
-            {comment.detail}
+            {ReactHtmlParser(comment.detail)}
           </Box>
         </Typography>
       </CardContent>

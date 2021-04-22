@@ -1,3 +1,6 @@
 import {createContext} from 'react'
-const authContext = createContext(true);
+const authContext = createContext({
+    id:'',
+    changeId: ()=>{}
+});
 export default  authContext;

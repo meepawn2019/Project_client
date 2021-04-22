@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import ReactHtmlParser from 'react-html-parser';
 // import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 //com
@@ -64,11 +65,6 @@ export default function QuestionCard(props) {
   const comments = question.comment;
   const classes = useStyles();
 
-  const [expanded, setExpanded] = React.useState(false);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
 
   return (
     <Card className={classes.root}>
@@ -104,8 +100,6 @@ export default function QuestionCard(props) {
         <Tooltip title="Trả lời">
           <IconButton
             aria-label="Comment"
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
           >
             <Badge badgeContent={comments.commentCount || 0} color="secondary">
               <ChatBubbleIcon />
@@ -124,15 +118,6 @@ export default function QuestionCard(props) {
         </Tooltip>
       </CardActions>
       <Divider />
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {comments.comment.length <= 0 ? (
-          <div>No answer yet</div>
-        ) : (
-          comments.comment.map((com, index) => (
-            <Comment key={index} comment={com} />
-          ))
-        )}
-      </Collapse>
     </Card>
   );
 }
@@ -158,7 +143,7 @@ const Comment = (props) => {
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
           <Box className={classes.question} fontWeight="fontWeightBold">
-            {comment.detail}
+            {ReactHtmlParser(comment.detail)}
           </Box>
         </Typography>
       </CardContent>

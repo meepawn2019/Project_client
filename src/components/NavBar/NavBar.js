@@ -19,7 +19,8 @@ import Slide from "@material-ui/core/Slide";
 import authContext from "../../../src/appContext";
 import ModalBody from "../Modal/ModalBody";
 import axios from "axios";
-var id = "8jSppc10mmeCNVRKsSx7sKtlEch1";
+// import RealModalLogi
+
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
@@ -117,7 +118,8 @@ function HideOnScroll(props) {
   );
 }
 
-export default function PrimarySearchAppBar() {
+export default function NavBar(props) {
+  const id = props.id
   const classes = useStyles();
   const [modalShow, setModalShow] = React.useState(false);
   const [modalLogInShow, setModalLoginShow] = React.useState(false);

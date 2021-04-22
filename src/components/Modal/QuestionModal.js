@@ -100,20 +100,19 @@ export default function QuestionModal(props) {
   };
 
   function handleQuestion(v) {
-    setQuestion(v);
-    setFormData({ ...formData, question: v });
+    setQuestion(v.target.value);
+    setFormData({ ...formData, question: v.target.value });
   }
 
   function handleDetailQuestion(v) {
+    console.log(v);
     setDetailQuestion(v);
     setFormData({ ...formData, detailQuestion: v });
-    console.log(formData);
   }
 
   function handleTagChange(v) {
     setTagOption(v);
     setFormData({ ...formData, tag: v });
-    console.log(formData);
   }
 
   function onSubmitForm() {
@@ -163,6 +162,7 @@ export default function QuestionModal(props) {
             label="Outlined"
             variant="outlined"
             placeholder="Bắt đầu bằng câu hỏi tại sao vì sao ..."
+            onChange={handleQuestion}
           />
         </FormControl>
 

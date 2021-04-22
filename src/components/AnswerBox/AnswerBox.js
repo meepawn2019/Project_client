@@ -21,6 +21,7 @@ export default function AnswerBox() {
   const [detailAnswer, setDetailAnswer] = useState();
   function handleDetailAnswer(v) {
     setDetailAnswer(v);
+    console.log(v);
   }
 
   const classes = useStyles();

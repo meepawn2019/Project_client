@@ -8,6 +8,7 @@ import {
   FormControlLabel,
   Checkbox,
   Select,
+  TextField,
 } from "@material-ui/core";
 // import Select from "react-select";
 import NativeSelect from "@material-ui/core/NativeSelect";
@@ -87,33 +88,12 @@ export default function QuestionModal(props) {
   const { handleClose } = props;
   const [formData, setFormData] = useState({});
   const [question, setQuestion] = useState("");
-  const [detailQuestion, setDetailQuestion] = useState();
-  const [tagOption, setTagOption] = useState(null);
   const [topicQuestion, setTopicQuestion] = useState("");
-
-  const [checkedBox, setCheckedBox] = useState(false);
 
   const classes = useStyles();
 
-  const handleChange = () => {
-    setCheckedBox(!checkedBox);
-  };
-
   function handleQuestion(v) {
-    setQuestion(v);
-    setFormData({ ...formData, question: v });
-  }
-
-  function handleDetailQuestion(v) {
-    setDetailQuestion(v);
-    setFormData({ ...formData, detailQuestion: v });
-    console.log(formData);
-  }
-
-  function handleTagChange(v) {
-    setTagOption(v);
-    setFormData({ ...formData, tag: v });
-    console.log(formData);
+    setQuestion(v.target.value);
   }
 
   function onSubmitForm() {
@@ -154,58 +134,15 @@ export default function QuestionModal(props) {
           </div>
         </FormGroup>
         <FormControl fullWidth={true} className="my-3">
-          <InputLabel className="font-weight-bold" htmlFor="my-input">
-            Câu hỏi
-          </InputLabel>
-          <Input
+          <TextField
+            label="Câu hỏi"
             id="my-input"
-            aria-describedby="my-helper-text"
-            label="Outlined"
-            variant="outlined"
             placeholder="Bắt đầu bằng câu hỏi tại sao vì sao ..."
-          />
-        </FormControl>
-
-        <FormControl fullWidth={true} className="my-3">
-          <span className="font-weight-bold">Chi tiết câu hỏi</span>
-
-          {/* <ReactQuill
-              theme="snow"
-              value={detailQuestion || ""}
-              onChange={handleDetailQuestion}
-            /> */}
-          <Editor
-            value={detailQuestion || ""}
-            onChange={handleDetailQuestion}
-          />
-        </FormControl>
-        <FormControl fullWidth={true} className="my-3">
-          <span className="font-weight-bold" htmlFor="my-input">
-            {`Thêm chủ đề trong lĩnh vực ${topicQuestion}`}
-          </span>
-          <Select
-            defaultValue={tagOption}
-            onChange={handleTagChange}
-            options={options}
-            multiple
-            labelId="demo-mutiple-checkbox-label"
-            id="demo-mutiple-checkbox"
-          />
-        </FormControl>
-        <FormControl fullWidth={true} className="my-3">
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={checkedBox}
-                onChange={handleChange}
-                name="checkedB"
-                color="primary"
-              />
-            }
-            label="Ghi nhớ mật khẩu"
+            onChange={handleQuestion}
           />
         </FormControl>
       </form>
+
       <div className={`${classes.center} text-right mt-3`}>
         <Button
           variant="contained"

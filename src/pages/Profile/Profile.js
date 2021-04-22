@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
+import ReactHtmlParser from "react-html-parser";
 import { makeStyles } from "@material-ui/core/styles";
 
 import Avatar from "@material-ui/core/Avatar";
@@ -22,6 +23,7 @@ import SimpleTabs from "./ProfileTab";
 import Questions from "./Questions";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,6 +35,14 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 15,
     [theme.breakpoints.down(500)]: {
       marginTop: "90px",
+    },
+  },
+  comment: {
+    width: "90vw",
+    borderRadius: 20,
+    marginBottom: 15,
+    [theme.breakpoints.up(900)]: {
+      width: 810,
     },
   },
   coverPhoto: {
@@ -58,6 +68,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "10px",
     fontSize: "20px",
     fontWeight: "bold",
+
   },
 }));
 
@@ -79,41 +90,48 @@ export default function Profile() {
         setUser(data.data);
         setLoading(false);
       })
-      .catch((e) => setError(true));
+      .catch((e) => {
+        setLoading(false);
+        setError(true)});
   }, [id]);
 
-  return loading ? (
-    <CircularProgress />
-  ) : error ? (
-    <div>error</div>
-  ) : (
+  return (
     <div className={classes.root}>
-      <div className={classes.coverPhoto}>
-        <img
-          // src="/wp7053694.png"
-          src={user.coverImage}
-          style={{ width: "inherit", height: "inherit" }}
-          alt="cover"
-        ></img>
-        <Avatar
-          aria-label="recipe"
-          className={classes.avatar}
-          // src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
-          src={user.avatar}
-        />
-      </div>
+      {loading ? (
+        <CircularProgress />
+      ) : error ? (
+        <div>error</div>
+      ) : 
+        <div className={classes.root}>
+          <div className={classes.coverPhoto}>
+            <img
+              // src="/wp7053694.png"
+              src={user.coverImage}
+              style={{ width: "inherit", height: "inherit" }}
+              alt="cover"
+            ></img>
+            <Avatar
+              aria-label="recipe"
+              className={classes.avatar}
+              // src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
+              src={user.avatar}
+            />
+          </div>
 
-      <Typography className={classes.userName}>
-        {user.userName || "Null"}
-      </Typography>
+          <Typography className={classes.userName} align='center'>
+            {user.userName || "Null"}
+          </Typography>
 
-      <SimpleTabs initTab={tab} />
-      <Temp
-        question={user.question.questions}
-        comment={user.comment}
-        topic={user.topic}
-        friend={user.friend}
-      />
+          <SimpleTabs initTab={tab} />
+          <Temp
+            question={user.question.questions}
+            comment={user.comment}
+            topic={user.topic}
+            friend={user.friend}
+          />
+        </div>
+      }
+      
     </div>
   );
 }
@@ -128,28 +146,35 @@ const Temp = (props) => {
     case "questions":
       return <Questions question={props.question} />;
     case "topics":
-      return props.topic.map((topic) => <Answer name={topic} />);
+      return <div></div>;
     case "friends":
       return props.friend.map((friend) => <Answer name={friend} />);
 
     default:
-      return props.comment.map((comment) => <Comment comment={comment} />);
+      return (
+        <div style={{ marginTop: 20 }}>
+          {props.comment.map((comment, index) => (
+            <Comment key={index} comment={comment} />
+          ))}
+        </div>
+      );
   }
 };
 
 const Comment = (props) => {
   const comment = props.comment;
   const classes = useStyles();
-  const user = comment.user || "Huy";
+  const user = comment.owner.userName || "Huy";
   const date =
     new Date(comment.commentAt).toLocaleDateString() || "September 14, 2016";
+  console.log(comment.question);
   return (
     <Card className={classes.comment}>
       <CardHeader
         avatar={
           <Avatar
             aria-label="recipe"
-            className={classes.avatar}
+            // className={classes.avatar}
             src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
           />
         }
@@ -158,8 +183,15 @@ const Comment = (props) => {
       />
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
+          <Button component={Link} to={`/question/${comment.question.id}`}>
+            <Box className={classes.question} fontWeight="fontWeightBold">
+              {"See full question : " + comment.question.question}
+            </Box>
+          </Button>
+        </Typography>
+        <Typography variant="body2" color="textSecondary" component="p">
           <Box className={classes.question} fontWeight="fontWeightBold">
-            {comment.detail}
+            {ReactHtmlParser(comment.detail)}
           </Box>
         </Typography>
       </CardContent>

@@ -105,7 +105,6 @@ export default function QuestionModal(props) {
   }
 
   function handleDetailQuestion(v) {
-    console.log(v);
     setDetailQuestion(v);
     setFormData({ ...formData, detailQuestion: v });
   }
@@ -179,7 +178,7 @@ export default function QuestionModal(props) {
             onChange={handleDetailQuestion}
           />
         </FormControl>
-        <FormControl fullWidth={true} className="my-3">
+        {/* <FormControl fullWidth={true} className="my-3">
           <span className="font-weight-bold" htmlFor="my-input">
             {`Thêm chủ đề trong lĩnh vực ${topicQuestion}`}
           </span>
@@ -191,8 +190,8 @@ export default function QuestionModal(props) {
             labelId="demo-mutiple-checkbox-label"
             id="demo-mutiple-checkbox"
           />
-        </FormControl>
-        <FormControl fullWidth={true} className="my-3">
+        </FormControl> */}
+        {/* <FormControl fullWidth={true} className="my-3">
           <FormControlLabel
             control={
               <Checkbox
@@ -204,7 +203,7 @@ export default function QuestionModal(props) {
             }
             label="Ghi nhớ mật khẩu"
           />
-        </FormControl>
+        </FormControl> */}
       </form>
       <div className={`${classes.center} text-right mt-3`}>
         <Button

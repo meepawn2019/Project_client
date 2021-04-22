@@ -24,6 +24,11 @@ export default function AnswerBox() {
     console.log(v);
   }
 
+  const handleClick = () => {
+    console.log(detailAnswer);
+    // call api
+  };
+
   const classes = useStyles();
 
   return (
@@ -33,6 +38,7 @@ export default function AnswerBox() {
         className={classes.buttonMain}
         variant="contained"
         color="primary"
+        onClick={handleClick}
       >
         Đăng
       </Button>

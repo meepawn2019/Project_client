@@ -10,6 +10,8 @@ import ChangePassword from "./pages/ChangePassword/ChangePassword";
 import Tempp from "./components/Modal/Tempp";
 import QuestionModal from './components/Modal/QuestionModal';
 import AnswerBox from './components/AnswerBox/AnswerBox';
+import QuestionModal from "./components/Modal/QuestionModal";
+import Answer from "./pages/Answer/Answer";
 
 function App() {
   const [id, setId] = useState("");
@@ -30,6 +32,8 @@ function App() {
         <Route path="/soso" component={Tempp}></Route>
         <Route path="/soso2" component={QuestionModal}></Route>
         <Route path="/soso3" component={AnswerBox}></Route>
+        <Route path="/postquestion" component={QuestionModal}></Route>
+        <Route path="/answer/:question" component={Answer}></Route>
       </Switch>
     </Router>
 

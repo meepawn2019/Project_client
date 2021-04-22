@@ -9,7 +9,7 @@ const useStyles = makeStyles({
     boxShadow: "0 2px 15px rgb(0 0 0 / 22%)",
     padding: "20px",
     backgroundColor: "#fff",
-    width: "1100px",
+    width: "100%",
   },
   buttonMain: {
     marginTop: "10px",

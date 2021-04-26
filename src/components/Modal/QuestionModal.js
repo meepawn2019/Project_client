@@ -94,6 +94,7 @@ export default function QuestionModal(props) {
 
   function handleQuestion(v) {
     setQuestion(v.target.value);
+    setFormData({ ...formData, question: v.target.value });
   }
 
   function onSubmitForm() {
@@ -144,14 +145,6 @@ export default function QuestionModal(props) {
       </form>
 
       <div className={`${classes.center} text-right mt-3`}>
-        <Button
-          variant="contained"
-          onClick={handleClose}
-          style={{ width: "80px" }}
-          className="mr-2 btn-light"
-        >
-          Hủy
-        </Button>
         <Button
           variant="contained"
           type="submit"

@@ -8,10 +8,11 @@ import Question from "./pages/Question/Question";
 import AuthContext from "./appContext";
 import ChangePassword from "./pages/ChangePassword/ChangePassword";
 import Tempp from "./components/Modal/Tempp";
-import QuestionModal from './components/Modal/QuestionModal';
-import AnswerBox from './components/AnswerBox/AnswerBox';
 import QuestionModal from "./components/Modal/QuestionModal";
+import AnswerBox from "./components/AnswerBox/AnswerBox";
+// import QuestionModal from "./components/Modal/QuestionModal";
 import Answer from "./pages/Answer/Answer";
+import Admin from "./pages/Admin/Admin";
 
 function App() {
   const [id, setId] = useState("");
@@ -20,11 +21,11 @@ function App() {
     // <AuthContext.Provider>
 
     <Router>
-      {/* <NavBar id={id}/> */}
+      {/* <NavBar id={id} /> */}
 
       <Switch>
-        {/* <Route exact path="/" component={Home}></Route>
-        <Route path="/profile/:id" component={Profile}></Route>
+        {/* <Route exact path="/" component={Home}></Route> */}
+        {/* <Route path="/profile/:id" component={Profile}></Route>
         <Route path="/setting" component={Setting}></Route>
         <Route path="/question/:id" component={Question}></Route>
         <Route path="/changepassword" component={ChangePassword}></Route>
@@ -34,6 +35,7 @@ function App() {
         <Route path="/soso3" component={AnswerBox}></Route>
         <Route path="/postquestion" component={QuestionModal}></Route>
         <Route path="/answer/:question" component={Answer}></Route>
+        <Route path="/admin" component={Admin}></Route>
       </Switch>
     </Router>
 

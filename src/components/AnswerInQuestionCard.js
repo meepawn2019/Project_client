@@ -1,48 +1,63 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
-import ReactHtmlParser from "react-html-parser";
 import { makeStyles } from "@material-ui/core/styles";
-
-import Avatar from "@material-ui/core/Avatar";
-import Typography from "@material-ui/core/Typography";
+import ReactHtmlParser from "react-html-parser";
+//com
 import Card from "@material-ui/core/Card";
+import Tooltip from "@material-ui/core/Tooltip";
+import Box from "@material-ui/core/Box";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
-import Box from "@material-ui/core/Box";
 import CardActions from "@material-ui/core/CardActions";
-import Tooltip from "@material-ui/core/Tooltip";
-import Badge from "@material-ui/core/Badge";
+import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
-import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-
+import Typography from "@material-ui/core/Typography";
+import { red } from "@material-ui/core/colors";
+import Badge from "@material-ui/core/Badge";
+// import Divider from "@material-ui/core/Divider";
+//icon
 import ShareIcon from "@material-ui/icons/Share";
-import ThumbDown from "@material-ui/icons/ThumbDown";
-import ThumbUp from "@material-ui/icons/ThumbUp";
 import MoreVert from "@material-ui/icons/MoreVert";
-
+import ThumbUp from "@material-ui/icons/ThumbUp";
+import ThumbDown from "@material-ui/icons/ThumbDown";
 import axios from "axios";
-import { connect } from "react-redux";
 
 import {
   likeAnAnswer,
   dislikeAnAnswer,
   deleteAnAnswer,
 } from "../redux/action/answerInQuestionAction";
+import { connect } from "react-redux";
+import { useState } from "react";
 
 import { deleteAnUserAnswer } from "../redux/action/userInfoAction";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: "rgb(243, 243, 240)",
-    paddingTop: "100px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    marginTop: 100,
+    // justifyContent: "center",
+  },
+  card: {
+    width: "90vw",
     marginBottom: 15,
-    [theme.breakpoints.down(500)]: {
-      marginTop: "90px",
+    marginTop: 100,
+    [theme.breakpoints.up(900)]: {
+      width: 810,
+    },
+  },
+
+  avatar: {
+    backgroundColor: red[500],
+  },
+  question: {
+    fontSize: "5vw",
+    fontWeight: "fontWeightBold",
+    color: "black",
+    [theme.breakpoints.up("500")]: {
+      fontSize: 25,
     },
   },
   comment: {
@@ -53,43 +68,39 @@ const useStyles = makeStyles((theme) => ({
       width: 810,
     },
   },
-  avatar: {
-    width: "140px",
-    height: "140px",
-    position: "absolute",
-    bottom: "-10px",
-    left: "50%",
-    marginLeft: "-70px",
-    backgroundColor: "white",
-  },
-  userName: {
-    margin: "10px",
-    fontSize: "20px",
-    fontWeight: "bold",
-  },
 }));
 
-function AnswerCard(props) {
+function AnswerInQuestionCard(props) {
   const comment = props.comment;
+  const questionId = props.questionId;
   const currentUser = props.currentUser;
-  let key = props.keyNow;
-  const classes = useStyles();
-  const user = comment.owner;
-  const date =
-    new Date(comment.createAt).toLocaleDateString() || "September 14, 2016";
+
+  const { likeAnAnswer, dislikeAnAnswer, deleteAnAnswer, deleteAnUserAnswer } =
+    props;
+
   const token = localStorage.getItem("token");
 
+  const classes = useStyles();
+
+  const user = comment.owner.userName || "Huy";
+  const date =
+    new Date(comment.createAt).toLocaleDateString() +
+    " " +
+    new Date(comment.createAt).toLocaleTimeString();
+
   function like() {
+    console.log(comment._id);
+
     axios
       .get(`/like/${comment._id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then()
+      .then(console.log)
       .catch(console.log);
     likeAnAnswer({
-      id: comment.question._id,
+      id: questionId,
       content: {
         answerId: comment._id,
         userId: currentUser._id,
@@ -104,10 +115,10 @@ function AnswerCard(props) {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then()
+      .then(console.log)
       .catch(console.log);
     dislikeAnAnswer({
-      id: comment.question._id,
+      id: questionId,
       content: {
         answerId: comment._id,
         userId: currentUser._id,
@@ -123,11 +134,10 @@ function AnswerCard(props) {
       })
       .then(() => {
         handleClose();
-        deleteAnAnswer({ id: comment.question._id, answerId: comment._id });
+        deleteAnAnswer({ id: questionId, answerId: comment._id });
         deleteAnUserAnswer({ id: currentUser._id, content: comment._id });
       });
   };
-
   const [menuOpen, setMenuOpen] = useState(null);
 
   const onClick = (event) => {
@@ -171,43 +181,52 @@ function AnswerCard(props) {
         avatar={
           <Avatar
             aria-label="recipe"
-            key={key}
-            src={
-              user.avatar ||
-              "https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
-            }
+            className={classes.avatar}
+            src={comment.owner.avatar}
           />
         }
-        title={user.userName}
+        title={user}
         subheader={date}
       />
       <CardContent>
-        <Button component={Link} to={`/question/${comment.question._id}`}>
-          <Box fontWeight="fontWeightBold">
-            {"Xem toàn bộ câu hỏi : " + comment.question.question}
-          </Box>
-        </Button>
-
-        <Box>{ReactHtmlParser(comment.answer)}</Box>
+        <Box className={classes.question}>
+          {ReactHtmlParser(comment.answer)}
+        </Box>
       </CardContent>
 
-      <CardActions disableSpacing>
+      <CardActions>
         <Tooltip title="Up Vote">
           <IconButton aria-label="like" onClick={like}>
             <Badge
               max={100000}
-              badgeContent={comment.likeCount}
+              badgeContent={comment.likeCount || 0}
               color="secondary"
             >
-              <ThumbUp />
+              <ThumbUp
+                color={
+                  comment.like?.includes(currentUser._id)
+                    ? "secondary"
+                    : "action"
+                }
+              />
             </Badge>
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Down Vote">
           <IconButton aria-label="dislike" onClick={dislike}>
-            <Badge badgeContent={comment.dislike.length} color="secondary">
-              <ThumbDown />
+            <Badge
+              max={100000}
+              badgeContent={comment.dislike.length}
+              color="secondary"
+            >
+              <ThumbDown
+                color={
+                  comment.dislike?.includes(currentUser._id)
+                    ? "secondary"
+                    : "action"
+                }
+              />
             </Badge>
           </IconButton>
         </Tooltip>
@@ -227,11 +246,6 @@ function AnswerCard(props) {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    currentUser: state.currentUser.user,
-  };
-};
 const mapDispatchToProps = {
   likeAnAnswer,
   dislikeAnAnswer,
@@ -239,4 +253,4 @@ const mapDispatchToProps = {
   deleteAnUserAnswer,
 };
 
-export default connect(null, mapDispatchToProps)(AnswerCard);
+export default connect(null, mapDispatchToProps)(AnswerInQuestionCard);

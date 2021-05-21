@@ -16,53 +16,66 @@ function a11yProps(index) {
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.background.paper,
+    display: "flex",
+    flexDirection: "row",
+    width: "90vw",
+    [theme.breakpoints.up(900)]: {
+      width: 810,
+    },
+  },
+  tab: {
+    flexGrow: 2,
   },
 }));
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
+
 export default function ProfileTab(props) {
   const classes = useStyles();
   const url = useRouteMatch().url;
-  let query = useQuery().get("tab");
+  const query = props.initTab;
 
-  const tabList = [`questions`, `topics`, `friends`];
-
-  let index = tabList.findIndex((value) => value === query) + 1;
+  let index = query ? 1 : 0;
   const [value, setValue] = React.useState(index);
 
   const handleChange = (event, newValue) => {
+    // setTab(query ? "questions" : null);
     setValue(newValue);
   };
   return (
-    <div className={classes.root}>
+    <div>
       <AppBar position="static" color="default">
-        <Tabs value={value} onChange={handleChange}>
+        <Tabs className={classes.root} value={value} onChange={handleChange}>
           <Tab
+            className={classes.tab}
             label="Câu trả lời"
             {...a11yProps(0)}
             component={Link}
             to={`${url}`}
           />
           <Tab
+            className={classes.tab}
             label="Câu hỏi"
             {...a11yProps(1)}
             component={Link}
             to={`${url}?tab=questions`}
           />
-
           <Tab
+            className={classes.tab}
             label="Chủ đề"
             {...a11yProps(2)}
-            component={Link}
-            to={`${url}?tab=topics`}
+            // component={Link}
+            // to={`${url}?tab=topics`}
           />
+
           <Tab
+            className={classes.tab}
             label="Bạn bè"
             {...a11yProps(3)}
-            component={Link}
-            to={`${url}?tab=friends`}
+            // component={Link}
+            // to={`${url}?tab=friends`}
           />
         </Tabs>
       </AppBar>

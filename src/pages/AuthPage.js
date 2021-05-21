@@ -9,8 +9,11 @@ import {
 } from "@material-ui/core";
 import makeStyle from "@material-ui/styles/makeStyles";
 import axios from "axios";
+import { loadCurrentUser } from "../redux/action/currentUserAction";
+import { connect } from "react-redux";
 
-const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const re =
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 const useStyles = makeStyle((theme) => ({
   root: {
@@ -29,8 +32,8 @@ const useStyles = makeStyle((theme) => ({
   },
 }));
 
-export default function Tempp(props) {
-  const setId = props.setId;
+function AuthPage(props) {
+  const loadUser = props.loadCurrentUser;
   const classes = useStyles();
   const [modalType, setModalType] = useState("login");
   const [checkedBox, setCheckedBox] = useState(false);
@@ -41,23 +44,23 @@ export default function Tempp(props) {
   const [password, setPassword] = useState("");
   const [rePass, setRePass] = useState("");
   const [name, setName] = useState("");
+  const [disable, setDisable] = useState(false);
 
   const handleRegisterClick = () => {
     setError(false);
     setModalType("register");
+    setName("");
+    setRePass("");
   };
   const handleLoginClick = () => {
     setError(false);
     setModalType("login");
-    setRePass("");
-    setName("");
+    // setPassword("");
   };
   const handleForgotClick = () => {
     setError(false);
     setModalType("forgot");
     setPassword("");
-    setRePass("");
-    setName("");
   };
   const handleCheckBoxChange = () => {
     setCheckedBox(!checkedBox);
@@ -121,6 +124,8 @@ export default function Tempp(props) {
   };
 
   const login = () => {
+    setDisable(true);
+    setError(false);
     axios
       .post(
         "/signInWithEmail",
@@ -132,19 +137,24 @@ export default function Tempp(props) {
       )
       .then((data) => {
         let token = data.data.token;
+        localStorage.setItem("token", data.data.token);
         axios
           .get("/checkAuthState", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           })
-          .then((auth) => setId(auth.data.user.id));
+          .then((auth) => {
+            setDisable(false);
+            loadUser(auth.data.user);
+          });
       })
       .catch((e) => {
+        console.log(e.response);
         setError(true);
-        // console.log(e.response);
-        // setErrorText("sai");
-        switch (e.response.data.error) {
+        setDisable(false);
+        if (!e.response) return setErrorText("Không thể kết nối đến server");
+        switch (e.response?.data.error) {
           case "Email is not verified":
             setErrorText("Vui lòng xác thực email");
             break;
@@ -158,6 +168,7 @@ export default function Tempp(props) {
   };
 
   const register = () => {
+    setDisable(true);
     setError(false);
     axios
       .post("/signUpWithEmail", {
@@ -166,27 +177,48 @@ export default function Tempp(props) {
         userName: name,
       })
       .then((data) => {
+        setDisable(false);
         setModalType("login");
       })
       .catch((e) => {
         console.log(e.response);
         setError(true);
         setErrorText(e.response.data.error);
+        setDisable(false);
+        if (!e.response.data)
+          return setErrorText("Không thể kết nối tới server");
 
         //Password should be at least 6 characters
         //The email address is already in use by another
-
         switch (e.response.data.error) {
           case "The email address is already in use by another account.":
             setErrorText("Email đã sử dụng");
             break;
-          case "Password should be at least 6 characters.":
+          case "Password should be at least 6 characters":
             setErrorText("Mật khẩu yếu");
             break;
           default:
             setErrorText("Sai thông tin đăng ký");
             break;
         }
+      });
+  };
+
+  const forgot = () => {
+    setDisable(true);
+    setError(false);
+    axios
+      .post("/forgetPassword", { email })
+      .then((val) => {
+        setDisable(false);
+        setModalType("login");
+      })
+      .catch((e) => {
+        setDisable(false);
+        setError(true);
+        if (!e.data) return setErrorText("Không thể kết nối tới server");
+
+        setErrorText(e.message);
       });
   };
   const callToServer = () => {
@@ -199,6 +231,9 @@ export default function Tempp(props) {
         register();
         break;
       case "forgot":
+        forgot();
+        break;
+      default:
         break;
     }
   };
@@ -264,7 +299,11 @@ export default function Tempp(props) {
         )}
         {modalType === "login" && (
           <FormControl fullWidth={true}>
-            <Button style={{ width: "150px" }} onClick={handleForgotClick}>
+            <Button
+              disabled={disable}
+              style={{ width: "150px" }}
+              onClick={handleForgotClick}
+            >
               Quên mật khẩu
             </Button>
           </FormControl>
@@ -272,6 +311,7 @@ export default function Tempp(props) {
         {modalType === "login" && (
           <FormControl className="mb-4 mt-4">
             <Button
+              disabled={disable}
               onClick={handleRegisterClick}
               variant="contained"
               color="secondary"
@@ -283,6 +323,7 @@ export default function Tempp(props) {
         {modalType !== "login" && (
           <FormControl className="mb-4 mt-4">
             <Button
+              disabled={disable}
               onClick={handleLoginClick}
               variant="contained"
               color="secondary"
@@ -297,11 +338,11 @@ export default function Tempp(props) {
             color="primary"
             type="submit"
             className="mb-3 float-right"
+            disabled={disable}
             onClick={(event) => {
               event.preventDefault();
               let valid = validateInput();
               if (valid) callToServer();
-              // console.log({ email, password, rePass, name });
             }}
           >
             {modalType === "login" && `Đăng nhập`}
@@ -313,3 +354,12 @@ export default function Tempp(props) {
     </div>
   );
 }
+
+const mapStateToProps = (state) => {
+  return { state };
+};
+const mapDispatchToProps = {
+  loadCurrentUser,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AuthPage);

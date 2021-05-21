@@ -1,9 +1,7 @@
 import QuestionCard from "../../components/QuestionCard/QuestionCard";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 const useStyles = makeStyles((theme) => ({
-  home: {
-    marginTop: "20px",
-  },
+  home: {},
 }));
 
 export default function Questions(props) {

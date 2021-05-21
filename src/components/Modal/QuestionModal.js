@@ -9,163 +9,179 @@ import {
   Checkbox,
   Select,
   TextField,
+  Avatar,
+  Typography,
 } from "@material-ui/core";
+
+import Autocomplete from "@material-ui/lab/Autocomplete";
 // import Select from "react-select";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import Editor from "../Editor/Editor";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import "./questionModal.css";
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "./questionModal.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
+import { connect } from "react-redux";
 
-const topic = [
-  "Những lĩnh vực khác",
-  "hoovada.com",
-  "Thai nghén & Nuôi dạy con",
-  "Luật pháp & Thủ tục",
-  "Xe cộ & Giao thông",
-  "Mua sắm & Tiêu dùng",
-  "Văn hóa trong và ngoài nước",
-  "Chuyện đời tư",
-  "Lĩnh vực người lớn",
-  "Đầu tư kinh doanh",
-  "Ngôn ngữ",
-  "Điện tử &  Máy móc",
-  "Con người & Tâm sinh lý",
-  "Hậu cần & Xuất nhập khẩu",
-  "Lịch sử & Truyền thuyết",
-  "Nghệ thuật",
-  "Truyền thông & Quảng cáo",
-  "Tiếng lóng & Biệt ngữ",
-  "Văn học",
-  "Du lịch",
-  "Chính trị",
-  "Tôn giáo",
-  "Âm nhạc & Điện ảnh",
-  "Thể thao",
-  "Ẩm thực",
-  "Giáo dục & Việc làm",
-  "Sức khỏe",
-  "Công nghệ thông tin",
-  "Động vật",
-  "Trò chơi & Giải trí",
-  "Nhà cửa & Xây dựng",
-  "Tài nguyên & Môi trường",
-  "Gia đình & Quan hệ xã hội",
-  "Khoa học tự nhiên",
-  "Khoa học xã hội và nhân văn",
-];
+const topics = [{ title: "Lập trình" }, { title: "Khác" }];
 
-const options = [
-  { value: "chocolate", label: "Chocolate" },
-  { value: "strawberry", label: "Strawberry" },
-  { value: "vanilla", label: "Vanilla" },
-  { value: "vanilla", label: "Vanilla" },
-  { value: "vanilla", label: "Vanilla" },
-  { value: "vanilla", label: "Vanilla" },
-  { value: "vanilla", label: "Vanilla" },
-];
-
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
-    position: "absolute",
-    top: "100px",
+    padding: 20,
+    width: "100%",
   },
-  center: {
-    width: "80%",
-    marginLeft: "10%",
+  userInfo: {
+    // margin: 10,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
-  questionForm: {
-    "& .ql-editor": {
-      minHeight: "300px !important",
-      maxHeight: "300px",
-      overflow: "hidden",
-      overflowY: "scroll",
+
+  avatar: {
+    margin: 10,
+  },
+  color: {
+    backgroundColor: "blue",
+  },
+  autocomplete: {
+    width: "90%",
+    margin: 10,
+  },
+
+  question: {
+    margin: 10,
+    width: "90%",
+  },
+  buttonContainer: {
+    // display: "flex",
+    // flexDirection: "row",
+    // alignItems: "center",
+    width: "100%",
+    backgroundColor: "red",
+  },
+  submitButton: {
+    float: "right",
+    backgroundColor: "orange",
+    height: 50,
+    padding: 10,
+    margin: 10,
+    boxShadow:
+      "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+    "&:hover": {
+      backgroundColor: "#ff6600",
     },
   },
-});
+  exitButton: {
+    float: "right",
+    height: 50,
+    padding: 10,
+    margin: 10,
+    boxShadow:
+      "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+  },
+}));
 
-export default function QuestionModal(props) {
-  const { handleClose } = props;
-  const [formData, setFormData] = useState({});
-  const [question, setQuestion] = useState("");
-  const [topicQuestion, setTopicQuestion] = useState("");
+function QuestionModal(props) {
+  const handleClose = props.handleModalClose;
+
+  const [question, setQuestion] = useState();
+  const [topic, setTopic] = useState("Lập trình");
+
+  const [creating, setCreating] = useState(false);
+
+  const currentUser = props.currentUser;
 
   const classes = useStyles();
 
-  function handleQuestion(v) {
-    setQuestion(v.target.value);
+  function onQuestionChange(event) {
+    setQuestion(event.target.value);
   }
 
-  function onSubmitForm() {
-    console.log(formData);
+  function onTopicChange(_, value, reason, cc) {
+    setTopic(value?.title || "Lập trình");
   }
 
-  function handleTopicChange(v) {
-    let topic = v.target.options[v.target.selectedIndex].text;
-    setTopicQuestion(topic);
+  function onSubmit() {
+    console.log(question, topic, currentUser._id);
+    setCreating(true);
+    setTimeout(() => {
+      setCreating(false);
+    }, 1000);
   }
 
   return (
     <div className={classes.root}>
-      <form className={`${classes.center} ${classes.questionForm}`}>
-        <FormGroup className="my-2 d-flex justify-content-between align-items-center flex-row">
-          <div className="d-flex align-items-center">
-            <img
-              height="40"
-              width="40"
-              src="/customer_avatar.png"
-              className="rounded-circle"
-              alt="avatar default"
-            />
-          </div>
-          <div>
-            <FormControl>
-              <NativeSelect>
-                {topic.map((e) => {
-                  return <option key={e}>{e}</option>;
-                })}
-              </NativeSelect>
-            </FormControl>
-            {/* <FormControl as="select" onChange={handleTopicChange}>
-                {topic.map((e) => {
-                  return <option key={e}>{e}</option>;
-                })}
-              </FormControl> */}
-          </div>
-        </FormGroup>
-        <FormControl fullWidth={true} className="my-3">
-          <TextField
-            label="Câu hỏi"
-            id="my-input"
-            placeholder="Bắt đầu bằng câu hỏi tại sao vì sao ..."
-            onChange={handleQuestion}
-          />
-        </FormControl>
-      </form>
+      <Typography variant="h3">Đăng câu hỏi</Typography>
 
-      <div className={`${classes.center} text-right mt-3`}>
+      <div className={classes.userInfo}>
+        <Avatar
+          className={classes.avatar}
+          src={currentUser.avatar}
+          alt="avatar default"
+        />
+        <Typography align="center" variant="h5" className={classes.a}>
+          {currentUser.userName}
+        </Typography>
+      </div>
+
+      <div className={classes.autocomplete}>
+        <Autocomplete
+          disabled={creating}
+          defaultValue={topics[0]}
+          value={topics[0]}
+          options={topics}
+          getOptionLabel={(option) => option.title}
+          onChange={onTopicChange}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              required
+              label="Chủ đề"
+              variant="outlined"
+              // value={topics[1].title}
+            />
+          )}
+        />
+      </div>
+
+      <TextField
+        className={classes.question}
+        label="Câu hỏi"
+        id="my-input"
+        placeholder="Bắt đầu bằng câu hỏi tại sao vì sao ..."
+        autoComplete={"off"}
+        required
+        disabled={creating}
+        onChange={onQuestionChange}
+      />
+
+      <div className={classes.buttonContainer}>
         <Button
-          variant="contained"
-          onClick={handleClose}
-          style={{ width: "80px" }}
-          className="mr-2 btn-light"
-        >
-          Hủy
-        </Button>
-        <Button
+          className={classes.submitButton}
           variant="contained"
           type="submit"
-          onClick={onSubmitForm}
-          style={{
-            width: "140px",
-            background: "rgb(241, 185, 84)",
-            borderColor: "rgb(241, 185, 84)",
-          }}
-          className="ml-1"
+          onClick={onSubmit}
+          disabled={!topic || !question || creating}
         >
           Tiếp
+        </Button>
+        <Button
+          className={classes.exitButton}
+          variant="contained"
+          onClick={handleClose}
+          disabled={creating}
+        >
+          Hủy
         </Button>
       </div>
     </div>
   );
 }
+
+const mapStateToProps = (state) => {
+  return {
+    currentUser: state.currentUser.user,
+  };
+};
+
+const mapDispatchToProps = {};
+export default connect(mapStateToProps, mapDispatchToProps)(QuestionModal);

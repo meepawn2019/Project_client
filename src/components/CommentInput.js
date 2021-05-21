@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "row",
-    width: '90vw',
+    width: "90vw",
     [theme.breakpoints.up(900)]: {
       width: 810,
     },
@@ -44,18 +44,7 @@ export default function CommentInput() {
   return (
     <div className={classes.root}>
       <div className={classes.comment}>
-        <InputBase
-          placeholder="Trả lời..."
-          className={classes.commentInput}
-          classes={{
-            root: classes.inputRoot,
-            input: classes.inputInput,
-          }}
-        />
       </div>
-      <IconButton>
-        <Send />
-      </IconButton>
     </div>
   );
 }

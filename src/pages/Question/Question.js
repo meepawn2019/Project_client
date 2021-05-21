@@ -1,207 +1,200 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link, Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import ReactHtmlParser from 'react-html-parser';
 //com
-import Card from "@material-ui/core/Card";
-import Tooltip from "@material-ui/core/Tooltip";
-import Box from "@material-ui/core/Box";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
-import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import { red } from "@material-ui/core/colors";
-import Badge from "@material-ui/core/Badge";
+
 // import Divider from "@material-ui/core/Divider";
 //icon
-import ShareIcon from "@material-ui/icons/Share";
-import MoreVert from "@material-ui/icons/MoreVert";
-import ThumbUp from "@material-ui/icons/ThumbUp";
-import ThumbDown from "@material-ui/icons/ThumbDown";
-import ChatBubbleIcon from "@material-ui/icons/ChatBubble";
 import axios from "axios";
-import CommentInput from "../../components/CommentInput";
+import QuestionCard from "../../components/QuestionCard/QuestionCard";
+import AnswerInQuestionCard from "../../components/AnswerInQuestionCard";
+import Button from "@material-ui/core/Button";
+import AnswerBox from "../../components/AnswerBox/AnswerBox";
+import { connect } from "react-redux";
+
+import {
+  loadQuestion,
+  loadAnswerInQuestion,
+} from "../../redux/action/answerInQuestionAction";
+import { CircularProgress } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    marginTop: 100,
     // justifyContent: "center",
   },
-  card: {
-    width: "90vw",
-    marginBottom: 15,
-    marginTop: 100,
-    [theme.breakpoints.up(900)]: {
-      width: 810,
-    },
+  partTitle: {
+    fontSize: 30,
+    fontWeight: "bold",
+    // margin
   },
-
-  avatar: {
-    backgroundColor: red[500],
-  },
-  question: {
-    fontSize: "5vw",
-    fontWeight: "fontWeightBold",
-    color: "black",
-    [theme.breakpoints.up("500")]: {
-      fontSize: 25,
-    },
-  },
-  comment: {
-    width: "90vw",
-    borderRadius: 20,
-    marginBottom: 15,
-    [theme.breakpoints.up(900)]: {
-      width: 810,
+  button: {
+    position: "fixed",
+    bottom: 15,
+    right: 15,
+    backgroundColor: "orange",
+    height: 50,
+    borderRadius: 30,
+    padding: 10,
+    margin: 10,
+    boxShadow:
+      "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+    "&:hover": {
+      backgroundColor: "#ff6600",
     },
   },
 }));
 
-export default function Question() {
+function Question(props) {
   let { id } = useParams();
   const classes = useStyles();
-  const [question, setQuestion] = useState({});
-  const [loading, setLoading] = useState(true);
+
+  const currentUser = props.currentUser.user;
+  const answerInQuestion = props.answerInQuestion[id];
+  const { loadQuestion, loadAnswerInQuestion } = props;
+  let loadingNew = false;
+  let loadAfter = answerInQuestion?.total || 20;
+  const [loadingQuestion, setLoadingQuestion] = useState(
+    !Boolean(answerInQuestion?.question)
+  );
+
+  const [loadingComment, setLoadingComment] = useState(
+    !Boolean(answerInQuestion?.answer)
+  );
+
   const [error, setError] = useState(false);
+  const [answerBoxShow, setAnswerBoxShow] = useState(false);
+
+  const scrollListener = (event) => {
+    const rect = document.body.getBoundingClientRect().bottom;
+    if (rect < 2000 && !loadingNew && !answerInQuestion?.isLast) {
+      loadingNew = true;
+      axios
+        .get(`/getCommentsInQuestion/${id}/${loadAfter}`)
+        .then((data) => {
+          let answers = data.data;
+          loadAfter += answers.comment.length;
+          loadAnswerInQuestion({
+            id: id,
+            content: answers.comment,
+            total: answers.total,
+            isLast: answers.isLast,
+          });
+          setLoadingComment(false);
+          loadingNew = false;
+        })
+        .catch((e) => {
+          setError(true);
+        });
+    }
+  };
 
   useEffect(() => {
-    axios
-      .get(`getQuestion/${id}`)
-      .then((data) => {
-        let temp = data.data.question;
-        temp.createAt = new Date(temp.createAt).toLocaleDateString();
-        setQuestion(temp);
-        setLoading(false);
-      })
-      .catch((e) => {
-        setError(true);
-        setLoading(false);
-      });
+    window.addEventListener("scroll", scrollListener);
+    if (!answerInQuestion?.question) {
+      axios
+        .get(`getQuestion/${id}`)
+        .then((data) => {
+          let question = data.data;
+
+          loadQuestion(question);
+
+          setLoadingQuestion(false);
+        })
+        .catch((e) => {
+          setError(true);
+
+          props.history.push("/");
+        });
+    }
+    if (!answerInQuestion?.answer) {
+      axios
+        .get(`/getCommentsInQuestion/${id}`)
+        .then((data) => {
+          let answers = data.data;
+          loadAnswerInQuestion({
+            id: id,
+            content: answers.comment,
+            total: answers.total,
+            isLast: answers.isLast,
+          });
+          setLoadingComment(false);
+        })
+        .catch((e) => {
+          setError(true);
+        });
+    }
+
+    return () => {
+      window.removeEventListener("scroll", scrollListener);
+    };
   }, [id]);
 
-  return loading ? (
-    <div>Loading</div>
-  ) : error ? (
-    <div>error</div>
-  ) : (
-    <div className={classes.root}>
-      <Card className={classes.card}>
-        <CardHeader
-          avatar={
-            <Avatar
-              aria-label="recipe"
-              className={classes.avatar}
-              src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
-            />
-          }
-          title={question.owner.userName}
-          subheader={question.createAt}
-        />
-        <CardContent>
-          <Typography variant="body2" color="textSecondary" component="p">
-            <Box className={classes.question} fontWeight="fontWeightBold">
-              {question.question}
-            </Box>
-          </Typography>
-        </CardContent>
+  const onCloseAnswerBox = () => {
+    setAnswerBoxShow(false);
+  };
+  const onOpenAnswerBox = () => {
+    setAnswerBoxShow(true);
+  };
 
-        <CardActions disableSpacing>
-          <Tooltip title="Trả lời">
-            <IconButton aria-label="Comment">
-              <Badge
-                badgeContent={question.comment.commentCount || 0}
-                color="secondary"
-              >
-                <ChatBubbleIcon />
-              </Badge>
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Chia sẻ">
-            <IconButton aria-label="share">
-              <ShareIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Xem thêm">
-            <IconButton aria-label="more">
-              <MoreVert />
-            </IconButton>
-          </Tooltip>
-        </CardActions>
-      </Card>
-      <CommentInput />
+  return (
+    <div className={classes.root}>
+      <AnswerBox
+        questionId={id}
+        user={currentUser}
+        onClose={onCloseAnswerBox}
+        open={answerBoxShow}
+      />
+      <Typography className={classes.partTitle}>Câu hỏi</Typography>
+      {loadingQuestion ? (
+        <CircularProgress />
+      ) : (
+        <QuestionCard
+          reload={() => {
+            props.history.push("/");
+          }}
+          question={props.answerInQuestion[id]?.question}
+        />
+      )}
+      <Typography className={classes.partTitle}>Câu trả lời</Typography>
+
       <div>
-        {question.comment.comment.length <= 0 ? (
+        {loadingComment ? (
+          <CircularProgress />
+        ) : props.answerInQuestion[id]?.answer?.length <= 0 ? (
           <div>No answer yet</div>
         ) : (
-          question.comment.comment.map((com, index) => {
-            com.user = com.user + index;
-            return <Comment key={index} comment={com} />;
+          props.answerInQuestion[id].answer.map((com, index) => {
+            return (
+              <AnswerInQuestionCard
+                key={index}
+                comment={com}
+                currentUser={currentUser}
+                questionId={id}
+              />
+            );
           })
         )}
       </div>
+      <Button className={classes.button} onClick={onOpenAnswerBox}>
+        Viết câu trả lời
+      </Button>
     </div>
   );
 }
 
-const Comment = (props) => {
-  const comment = props.comment;
-  const classes = useStyles();
-  const user = comment.user || "Huy";
-  const date =
-    new Date(comment.commentAt).toLocaleDateString() || "September 14, 2016";
-  return (
-    <Card className={classes.comment}>
-      <CardHeader
-        avatar={
-          <Avatar
-            aria-label="recipe"
-            className={classes.avatar}
-            src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
-          />
-        }
-        title={user}
-        subheader={date}
-      />
-      <CardContent>
-        <Typography variant="body2" color="textSecondary" component="p">
-          <Box className={classes.question} fontWeight="fontWeightBold">
-            {ReactHtmlParser(comment.detail)}
-          </Box>
-        </Typography>
-      </CardContent>
+const mapStateToProps = (state) => ({
+  answerInQuestion: state.answerInQuestion,
+  currentUser: state.currentUser,
+});
 
-      <CardActions disableSpacing>
-        <Tooltip title="Up Vote">
-          <IconButton aria-label="like">
-            <Badge badgeContent={comment.like.length} color="secondary">
-              <ThumbUp />
-            </Badge>
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip title="Down Vote">
-          <IconButton aria-label="dislike">
-            <Badge badgeContent={comment.dislike.length} color="secondary">
-              <ThumbDown />
-            </Badge>
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip title="Share">
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="More">
-          <IconButton aria-label="more">
-            <MoreVert />
-          </IconButton>
-        </Tooltip>
-      </CardActions>
-    </Card>
-  );
+const mapDispatchToProps = {
+  loadQuestion,
+  loadAnswerInQuestion,
 };
+
+export default connect(mapStateToProps, mapDispatchToProps)(Question);

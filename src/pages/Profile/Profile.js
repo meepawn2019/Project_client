@@ -1,41 +1,46 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import ReactHtmlParser from "react-html-parser";
 import { makeStyles } from "@material-ui/core/styles";
 
 import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
-import Box from "@material-ui/core/Box";
-import CardActions from "@material-ui/core/CardActions";
-import Tooltip from "@material-ui/core/Tooltip";
-import Badge from "@material-ui/core/Badge";
-import IconButton from "@material-ui/core/IconButton";
-
-import ShareIcon from "@material-ui/icons/Share";
-import ThumbDown from "@material-ui/icons/ThumbDown";
-import ThumbUp from "@material-ui/icons/ThumbUp";
-import MoreVert from "@material-ui/icons/MoreVert";
+import SnackBar from "@material-ui/core/SnackBar";
+import Alert from "@material-ui/lab/Alert";
 
 import SimpleTabs from "./ProfileTab";
 import Questions from "./Questions";
+import ImageCrop from "../../components/ImageCrop";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { Button } from "@material-ui/core";
+
+import {
+  loadAnUser,
+  loadAnUserAnswer,
+  loadAnUserFriend,
+  loadAnUserQuestion,
+  loadAnUserTopic,
+  changeUserAvatar,
+  changeUserCoverImage,
+} from "../../redux/action/userInfoAction";
+
+import {
+  changeCurrentUserAvatar,
+  changeCurrentUserCoverImage,
+} from "../../redux/action/currentUserAction";
+
+import AnswerCard from "../../components/AnswerCard";
+import { connect } from "react-redux";
+import { Dialog } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "rgb(243, 243, 240)",
-    paddingTop: "100px",
+    paddingTop: 100,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    justifyItems: "center",
     marginBottom: 15,
-    [theme.breakpoints.down(500)]: {
-      marginTop: "90px",
-    },
   },
   comment: {
     width: "90vw",
@@ -50,9 +55,9 @@ const useStyles = makeStyles((theme) => ({
     height: "50vw",
     position: "relative",
     backgroundColor: "white",
-    [theme.breakpoints.up(700)]: {
-      width: "630px",
-      height: "350px",
+    [theme.breakpoints.up(900)]: {
+      width: 810,
+      height: 450,
     },
   },
   avatar: {
@@ -64,11 +69,17 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "-70px",
     backgroundColor: "white",
   },
+  imageLoadButton: {
+    cursor: "pointer",
+  },
   userName: {
     margin: "10px",
     fontSize: "20px",
     fontWeight: "bold",
+  },
 
+  temp: {
+    marginTop: "20px",
   },
 }));
 
@@ -76,154 +87,312 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-export default function Profile() {
-  const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+function Profile(props) {
   const classes = useStyles();
   const { id } = useParams();
-  const tab = useQuery().get("tab");
-  useEffect(() => {
+  let tab = useQuery().get("tab");
+  const user = props.user[id]?.user;
+  const answer = props.user[id]?.answer;
+  const question = props.user[id]?.question;
+  const currentUser = props.currentUser.user;
+  const isOwner = currentUser?._id == id;
+
+  const {
+    loadAnUser,
+    loadAnUserAnswer,
+    loadAnUserQuestion,
+    changeUserAvatar,
+    changeUserCoverImage,
+  } = props;
+
+  const [loadingUser, setLoadingUser] = useState(!Boolean(user));
+  const [loadingAnswer, setLoadingAnswer] = useState(false);
+  const [loadingQuestion, setLoadingQuestion] = useState(false);
+  const [error, setError] = useState(false);
+
+  const [openCrop, setOpenCrop] = useState(false);
+  const [aspect, setAspect] = useState(1);
+  const [apiUrl, setApiUrl] = useState();
+
+  const [file, setFile] = useState();
+
+  const [snackBar, setSnackBar] = useState(false);
+  const [snackBarType, setSnackBarType] = useState("warning");
+  const [snackBarText, setSnackBarText] = useState("");
+
+  let isQuestionLoading = false;
+  let isAnswerLoading = false;
+  let loadQuestionAfter = question?.total || 20;
+  let loadAnswerAfer = answer?.total || 20;
+  let isLastQuestion = question?.isLast;
+  let isLastAnswer = answer?.isLast;
+
+  const loadMoreQuestion = (skip) => {
     axios
-      .get(`/profile/${id}`)
+      .get(`/getQuestionsByUserId/${id}/${skip}`)
       .then((data) => {
-        setUser(data.data);
-        setLoading(false);
+        loadAnUserQuestion({
+          id: id,
+          content: data.data.question,
+          isLast: data.data.isLast,
+          total: data.data.total,
+        });
+        loadQuestionAfter = data.data.total;
+        isLastQuestion = data.data.isLast;
+        isQuestionLoading = false;
       })
       .catch((e) => {
-        setLoading(false);
-        setError(true)});
-  }, [id]);
+        // setLoadingQuestion(false);
+        // setError(true);
+      });
+  };
 
-  return (
+  const loadMoreAnswer = (skip) => {
+    axios
+      .get(`/getCommentsOfUser/${id}/${skip}`)
+      .then((data) => {
+        loadAnUserAnswer({
+          id: id,
+          content: data.data.comment,
+          isLast: data.data.isLast,
+          total: data.data.total,
+        });
+        loadAnswerAfer = data.data.total;
+        isLastAnswer = data.data.isLast;
+        isAnswerLoading = false;
+      })
+      .catch((e) => {
+        // setLoadingAnswer(false);
+        // setError(true);
+      });
+  };
+  const scrollListener = (event) => {
+    const rect = document.body.getBoundingClientRect().bottom;
+    if (tab == "questions") {
+      if (rect < 2000 && !isQuestionLoading && !isLastQuestion) {
+        isQuestionLoading = true;
+
+        loadMoreQuestion(loadQuestionAfter);
+      }
+    } else {
+      if (rect < 2000 && !isAnswerLoading && !isLastAnswer) {
+        isAnswerLoading = true;
+        loadMoreAnswer(loadAnswerAfer);
+      }
+    }
+  };
+  useEffect(() => {
+    window.addEventListener("scroll", scrollListener);
+    if (!user) {
+      setLoadingUser(true);
+      axios
+        .get(`/profile/${id}`)
+        .then((data) => {
+          loadAnUser(data.data);
+          setLoadingUser(false);
+        })
+        .catch((e) => {
+          setLoadingUser(false);
+          setError(true);
+        });
+    }
+    if (!answer && !tab) {
+      loadMoreAnswer(0);
+    }
+
+    if (!question && tab) {
+      loadMoreQuestion(0);
+    }
+    return () => {
+      window.removeEventListener("scroll", scrollListener);
+    };
+  }, [id, tab]);
+
+  const onAvatarChoose = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setOpenCrop(true);
+      setFile(e.target.files[0]);
+      setAspect(1);
+      setApiUrl("/updateAvatar");
+    }
+  };
+  const onCoverImageChoose = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setOpenCrop(true);
+      setFile(e.target.files[0]);
+      setAspect(9 / 5);
+      setApiUrl("/updateCoverImage");
+    }
+  };
+
+  const getNewUrl = (data) => {
+    setOpenCrop(false);
+    setSnackBar(true);
+    setSnackBarType("success");
+    setSnackBarText("Thay đổi thành công");
+    console.log(apiUrl);
+    if (apiUrl.includes("updateAvatar")) {
+      changeUserAvatar({ id: id, content: data.data.avatar });
+      changeCurrentUserAvatar({ content: data.data.avatar });
+    } else if (apiUrl.includes("updateCoverImage")) {
+      changeUserCoverImage({ id: id, content: data.data.coverImage });
+      changeCurrentUserCoverImage({ content: data.data.coverImage });
+    }
+  };
+
+  const getError = (e) => {
+    setSnackBar(true);
+    setSnackBarType("warning");
+    setSnackBarText(e.response?.data || "Lỗi");
+  };
+
+  const onCloseCrop = () => {
+    setOpenCrop(false);
+  };
+
+  return loadingUser ? (
+    <CircularProgress />
+  ) : error ? (
+    <div>error</div>
+  ) : (
     <div className={classes.root}>
-      {loading ? (
-        <CircularProgress />
-      ) : error ? (
-        <div>error</div>
-      ) : 
-        <div className={classes.root}>
+      {
+        <div>
+          <SnackBar
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+            open={snackBar}
+            autoHideDuration={3000}
+            onClose={() => setSnackBar(false)}
+            message="Note archived"
+          >
+            <Alert onClose={() => setSnackBar(false)} severity={snackBarType}>
+              {snackBarText}
+            </Alert>
+          </SnackBar>
+          {file && (
+            <Dialog open={openCrop} onClose={onCloseCrop}>
+              <ImageCrop
+                open={openCrop}
+                setOpen={setOpenCrop}
+                onClose={onCloseCrop}
+                aspect={aspect}
+                apiUrl={apiUrl}
+                getNewUrl={getNewUrl}
+                getError={getError}
+                file={file}
+              />
+            </Dialog>
+          )}
           <div className={classes.coverPhoto}>
-            <img
-              // src="/wp7053694.png"
-              src={user.coverImage}
-              style={{ width: "inherit", height: "inherit" }}
-              alt="cover"
-            ></img>
-            <Avatar
-              aria-label="recipe"
-              className={classes.avatar}
-              // src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
-              src={user.avatar}
-            />
+            <label
+              className={`${classes.coverPhoto} ${
+                isOwner && classes.imageLoadButton
+              }`}
+            >
+              <img
+                src={props.user[id]?.user?.coverImage}
+                style={{ width: "inherit", height: "inherit" }}
+                alt="cover"
+              ></img>
+              {isOwner && (
+                <input type="file" hidden onChange={onCoverImageChoose} />
+              )}
+            </label>
+
+            <label>
+              <Avatar
+                aria-label="recipe"
+                className={`${classes.avatar} ${
+                  isOwner && classes.imageLoadButton
+                }`}
+                src={user?.avatar}
+              />
+              {isOwner && (
+                <input type="file" hidden onChange={onAvatarChoose} />
+              )}
+            </label>
           </div>
 
-          <Typography className={classes.userName} align='center'>
+          <Typography className={classes.userName} align="center">
             {user.userName || "Null"}
           </Typography>
 
           <SimpleTabs initTab={tab} />
-          <Temp
-            question={user.question.questions}
-            comment={user.comment}
-            topic={user.topic}
-            friend={user.friend}
-          />
+
+          <div className={classes.temp}>
+            <Info
+              className={classes.comment}
+              // user={props.user[id]?.user}
+              user={user}
+              currentUser={currentUser}
+              question={question?.content || []}
+              answer={answer?.content || []}
+              loadingAnswer={!Boolean(answer)}
+              loadingQuestion={!Boolean(question)}
+            />
+          </div>
         </div>
       }
-      
     </div>
   );
 }
 
-function Answer({ name }) {
-  return <div>{name}</div>;
-}
-
 const Temp = (props) => {
+  const {
+    user,
+    currentUser,
+    question,
+    answer,
+    loadingAnswer,
+    loadingQuestion,
+  } = props;
+  let userInfo = user;
   const tab = useQuery().get("tab");
   switch (tab) {
     case "questions":
-      return <Questions question={props.question} />;
-    case "topics":
-      return <div></div>;
-    case "friends":
-      return props.friend.map((friend) => <Answer name={friend} />);
+      return !loadingQuestion ? (
+        <Questions
+          question={question.map((q) => {
+            q.owner = userInfo;
+            return q;
+          })}
+        />
+      ) : (
+        <CircularProgress />
+      );
 
     default:
-      return (
-        <div style={{ marginTop: 20 }}>
-          {props.comment.map((comment, index) => (
-            <Comment key={index} comment={comment} />
-          ))}
-        </div>
+      return loadingAnswer ? (
+        <CircularProgress />
+      ) : (
+        answer.map((ans, index) => {
+          ans.owner = userInfo;
+          return (
+            <AnswerCard key={index} comment={ans} currentUser={currentUser} />
+          );
+        })
       );
   }
 };
 
-const Comment = (props) => {
-  const comment = props.comment;
-  const classes = useStyles();
-  const user = comment.owner.userName || "Huy";
-  const date =
-    new Date(comment.commentAt).toLocaleDateString() || "September 14, 2016";
-  console.log(comment.question);
-  return (
-    <Card className={classes.comment}>
-      <CardHeader
-        avatar={
-          <Avatar
-            aria-label="recipe"
-            // className={classes.avatar}
-            src="https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
-          />
-        }
-        title={user}
-        subheader={date}
-      />
-      <CardContent>
-        <Typography variant="body2" color="textSecondary" component="p">
-          <Button component={Link} to={`/question/${comment.question.id}`}>
-            <Box className={classes.question} fontWeight="fontWeightBold">
-              {"See full question : " + comment.question.question}
-            </Box>
-          </Button>
-        </Typography>
-        <Typography variant="body2" color="textSecondary" component="p">
-          <Box className={classes.question} fontWeight="fontWeightBold">
-            {ReactHtmlParser(comment.detail)}
-          </Box>
-        </Typography>
-      </CardContent>
+const mapStateToProps = (state) => ({
+  user: state.userInfo,
+  currentUser: state.currentUser,
+});
 
-      <CardActions disableSpacing>
-        <Tooltip title="Up Vote">
-          <IconButton aria-label="like">
-            <Badge badgeContent={comment.like.length} color="secondary">
-              <ThumbUp />
-            </Badge>
-          </IconButton>
-        </Tooltip>
+const mapDispatchToProps = {
+  loadAnUser,
+  loadAnUserAnswer,
+  loadAnUserQuestion,
+  changeUserAvatar,
+  changeUserCoverImage,
 
-        <Tooltip title="Down Vote">
-          <IconButton aria-label="dislike">
-            <Badge badgeContent={comment.dislike.length} color="secondary">
-              <ThumbDown />
-            </Badge>
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip title="Share">
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="More">
-          <IconButton aria-label="more">
-            <MoreVert />
-          </IconButton>
-        </Tooltip>
-      </CardActions>
-    </Card>
-  );
+  changeCurrentUserAvatar,
+  changeCurrentUserCoverImage,
 };
+
+const Info = connect(null, mapDispatchToProps)(Temp);
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

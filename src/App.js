@@ -1,44 +1,54 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { useState } from "react";
+import NavBar from "./components/NavBar/NavBar";
+import AuthPage from "./pages/AuthPage";
+import { connect } from "react-redux";
+import {
+  loadCurrentUser,
+  clearCurrentUser,
+} from "./redux/action/currentUserAction";
 import Home from "./pages/Home/Home";
 import Profile from "./pages/Profile/Profile";
-import NavBar from "./components/NavBar/NavBar";
+
 import Setting from "./pages/Setting";
 import Question from "./pages/Question/Question";
-import AuthContext from "./appContext";
 import ChangePassword from "./pages/ChangePassword/ChangePassword";
-import Tempp from "./components/Modal/Tempp";
-import QuestionModal from './components/Modal/QuestionModal';
-import AnswerBox from './components/AnswerBox/AnswerBox';
+
 import QuestionModal from "./components/Modal/QuestionModal";
+import AnswerBox from "./components/AnswerBox/AnswerBox";
 import Answer from "./pages/Answer/Answer";
 
-function App() {
-  const [id, setId] = useState("");
-  // if (!id) return <Tempp setId={setId} />;
-  return (
-    // <AuthContext.Provider>
+import AnswerCard from "./components/AnswerCard";
+// import ImageCrop from "./ImageCrop";
 
+function App(props) {
+  const user = props.user.user;
+  if (!user) return <AuthPage />;
+  if (!user._id) return <AuthPage />;
+  return (
     <Router>
-      {/* <NavBar id={id}/> */}
+      <NavBar user={user} />
 
       <Switch>
-        {/* <Route exact path="/" component={Home}></Route>
+        <Route exact path="/" component={Home}></Route>
         <Route path="/profile/:id" component={Profile}></Route>
         <Route path="/setting" component={Setting}></Route>
-        <Route path="/question/:id" component={Question}></Route>
+
         <Route path="/changepassword" component={ChangePassword}></Route>
-        <Route path="/postquestion" component={QuestionModal}></Route> */}
-        <Route path="/soso" component={Tempp}></Route>
-        <Route path="/soso2" component={QuestionModal}></Route>
-        <Route path="/soso3" component={AnswerBox}></Route>
         <Route path="/postquestion" component={QuestionModal}></Route>
-        <Route path="/answer/:question" component={Answer}></Route>
+        <Route path="/question/:id" component={Question}></Route>
+        {/* <Route path="/soso2" component={ImageCrop}></Route> */}
       </Switch>
     </Router>
-
-    // </AuthContext.Provider>
   );
 }
+function mapStateToProps(state) {
+  return {
+    user: state.currentUser,
+  };
+}
 
-export default App;
+const mapDispatchToProps = {
+  loadCurrentUser,
+  clearCurrentUser,
+};
+export default connect(mapStateToProps)(App);

@@ -1,25 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
+import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
-// import Modal from "@material-ui/core/Modal";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import Dialog from "@material-ui/core/Dialog";
 import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import Edit from "@material-ui/icons/Edit";
-import AskQuestion from "./AskQuestion";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import Slide from "@material-ui/core/Slide";
-import authContext from "../../../src/appContext";
 import ModalBody from "../Modal/ModalBody";
 import axios from "axios";
-// import RealModalLogi
+import MakeQuestionBox from "../MakeQuestionBox";
+import { clearCurrentUser } from "../../redux/action/currentUserAction";
+import { clearAllQuestionAnswer } from "../../redux/action/answerInQuestionAction";
+import { clearAllHomeQuestion } from "../../redux/action/homeQuestionAction";
+import { clearAllUserInfo } from "../../redux/action/userInfoAction";
+
+import SearchQuestion from "../SearchQuestion";
+
+import { connect } from "react-redux";
+import { Avatar } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -36,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "10px",
     marginBottom: "10px",
     [theme.breakpoints.down("500")]: {
-      maxWidth: 125,
+      width: 125,
       marginLeft: "10px",
       // display:'none'
     },
@@ -55,13 +64,13 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: fade("rgb(213, 213, 213)", 0.25),
     },
-    marginRight: theme.spacing(2),
     marginLeft: 0,
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(3),
-      width: "auto",
-    },
+    width: "50vw",
+    minWidth: 150,
+    // [theme.breakpoints.up("sm")]: {
+    //   marginLeft: theme.spacing(3),
+    //   width: "auto",
+    // },
   },
   searchIcon: {
     padding: theme.spacing(0, 2),
@@ -72,7 +81,11 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
   },
-  searchInput: {},
+  searchList: {
+    position: "absolute",
+    backgroundColor: "white",
+  },
+
   inputRoot: {
     color: "inherit",
     [theme.breakpoints.down("200")]: {
@@ -118,11 +131,14 @@ function HideOnScroll(props) {
   );
 }
 
-export default function NavBar(props) {
-  const id = props.id
+function NavBar(props) {
+  const user = props.user;
   const classes = useStyles();
   const [modalShow, setModalShow] = React.useState(false);
-  const [modalLogInShow, setModalLoginShow] = React.useState(false);
+  const [searchList, setSearchList] = React.useState([]);
+  const [searchShow, setSearchShow] = useState(false);
+  const [loadingSearch, setLoadingSearch] = useState(false);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [show, setShow] = useState(false);
@@ -136,11 +152,12 @@ export default function NavBar(props) {
 
   const logOut = (event) => {
     handleMenuClose();
-    alert("LogOut");
-  };
-  const logIn = (event) => {
-    handleMenuClose();
-    setShow(true);
+    localStorage.removeItem("token");
+    props.clearCurrentUser();
+    props.clearAllHomeQuestion();
+    props.clearAllQuestionAnswer();
+    props.clearAllUserInfo();
+    console.log(props.data);
   };
 
   const handleProfileMenuOpen = (event) => {
@@ -174,7 +191,7 @@ export default function NavBar(props) {
       <MenuItem
         onClick={handleMenuClose}
         component={Link}
-        to={`/profile/${id}`}
+        to={`/profile/${user._id}`}
       >
         Tài khoản của tôi
       </MenuItem>
@@ -182,8 +199,9 @@ export default function NavBar(props) {
       <MenuItem onClick={handleMenuClose} component={Link} to="/setting">
         Cài đặt
       </MenuItem>
-      <MenuItem onClick={logOut}>Đăng xuất</MenuItem>
-      <MenuItem onClick={logIn}>Đăng nhập</MenuItem>
+      <MenuItem component={Link} to="/" onClick={logOut}>
+        Đăng xuất
+      </MenuItem>
     </Menu>
   );
 
@@ -217,23 +235,54 @@ export default function NavBar(props) {
           aria-haspopup="true"
           color="inherit"
         >
-          <AccountCircle />
+          <Avatar src={user.avatar} />
         </IconButton>
         <Typography>Tài khoản</Typography>
       </MenuItem>
     </Menu>
   );
 
+  const onSearching = (event) => {
+    let key = event.target.value;
+    if (key.trim()) {
+      setSearchShow(true);
+      setLoadingSearch(true);
+      axios(`/findQuestionByKey/${key}`).then((data) => {
+        setSearchList(data.data);
+        setLoadingSearch(false);
+        console.log(data.data);
+      });
+    } else {
+      setSearchList([]);
+      setSearchShow(false);
+      setLoadingSearch(false);
+    }
+  };
+
+  const onDismiss = () => {
+    setSearchList([]);
+    setSearchShow(false);
+  };
+
+  const clickListener = (event) => {
+    // console.log(event.target);
+  };
+  useEffect(() => {
+    window.addEventListener("click", clickListener);
+
+    return () => {
+      window.removeEventListener("click", clickListener);
+    };
+  }, []);
+
   return (
     <div className={classes.grow}>
-      <AskQuestion
-        modalShow={modalShow}
-        handleClose={() => setModalShow(false)}
+      <MakeQuestionBox
+        open={modalShow}
+        className={classes.center}
+        handleModalClose={() => setModalShow(false)}
       />
-      {/* <RealLoginModal
-        modalLogInShow={modalLogInShow}
-        handleLogInModalClose={handleLogInModalClose}
-      /> */}
+
       <HideOnScroll>
         <AppBar color="default">
           <Toolbar>
@@ -253,14 +302,15 @@ export default function NavBar(props) {
                   input: classes.inputInput,
                 }}
                 inputProps={{ "aria-label": "search" }}
-                onChange={(text) => {
-                  let key = text.target.value;
-                  if (key)
-                    axios(`/findQuestionByKey/${key}`).then((data) =>
-                      console.log(data.data)
-                    );
-                }}
+                onChange={onSearching}
               />
+              {searchShow && (
+                <SearchQuestion
+                  loading={loadingSearch}
+                  searchList={searchList}
+                  onDismiss={onDismiss}
+                />
+              )}
             </div>
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
@@ -292,7 +342,7 @@ export default function NavBar(props) {
                   aria-haspopup="true"
                   color="inherit"
                 >
-                  <AccountCircle />
+                  <Avatar src={user.avatar} />
                 </IconButton>
                 <Typography>Tài khoản</Typography>
               </MenuItem>
@@ -317,3 +367,14 @@ export default function NavBar(props) {
     </div>
   );
 }
+
+const mapStateToProps = (state) => {
+  return { data: state };
+};
+const mapDispatchToProps = {
+  clearCurrentUser,
+  clearAllHomeQuestion,
+  clearAllQuestionAnswer,
+  clearAllUserInfo,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(NavBar);

@@ -89,12 +89,6 @@ export default function DrawerMenu(props) {
           </ListItemIcon>
           <ListItemText primary={"Trang chủ"} />
         </ListItem>
-        <ListItem button onClick={handleStatisClick}>
-          <ListItemIcon>
-            <BarChartIcon />
-          </ListItemIcon>
-          <ListItemText primary={"Thống kê"} />
-        </ListItem>
         <ListItem button onClick={handleUsersClick}>
           <ListItemIcon>
             <GroupIcon />

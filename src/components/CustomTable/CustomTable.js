@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TablePagination from "@material-ui/core/TablePagination";
+import Select from "@material-ui/core/Select";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
 import EnhancedToolbar from "./EnhancedToolbar";
 import EnhancedTableHeader from "./EnhancedTableHeader";
 import { Button } from "@material-ui/core";
+// import { useQuery, gql } from "@apollo/client";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,14 +39,58 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function formatDate(date) {
+  var d = new Date(date),
+    month = "" + (d.getMonth() + 1),
+    day = "" + d.getDate(),
+    year = d.getFullYear();
+
+  if (month.length < 2) month = "0" + month;
+  if (day.length < 2) day = "0" + day;
+
+  return [year, month, day].join("-");
+}
+
 export default function CustomTable(props) {
-  const { columns, data } = props;
+  const { columns, data, title, handleAddClick, ...rest } = props;
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [searchText, setSearchText] = useState("");
+  const [searchData, setSearchData] = useState(data);
+  const [searchable, setSearchable] = useState(
+    columns.find((el) => el.searchKey) ? true : false
+  );
+
+  useEffect(() => {
+    const searchKey = columns.find((el) => el.searchKey)
+      ? columns.find((el) => el.searchKey).id
+      : null;
+    if (searchKey) {
+      const type = columns.find((el) => el.searchKey).type;
+      const valueLink = columns.find((el) => el.searchKey).value;
+      if (type === "link") {
+        setSearchData(
+          data.filter((element) => {
+            return element[searchKey][valueLink]
+              .toLowerCase()
+              .includes(searchText);
+          })
+        );
+      } else {
+        setSearchData(
+          data.filter((element) => {
+            return element[searchKey].toLowerCase().includes(searchText);
+          })
+        );
+      }
+    } else {
+      setSearchData(data);
+    }
+  }, [columns, data, searchText]);
 
   function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -73,7 +120,9 @@ export default function CustomTable(props) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = data.map((n) => n.name);
+      const newSelecteds = data.map(
+        (n) => n[columns.find((el) => el.mainKey).id]
+      );
       setSelected(newSelecteds);
       return;
     }
@@ -117,24 +166,91 @@ export default function CustomTable(props) {
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
-  const tableRow = () => {
-    for (const prop in data) {
-      console.log(data[prop]);
-      return <TableCell align="right">{prop} </TableCell>;
-    }
-  };
-
   const handleBanClick = (e, data) => {
     e.stopPropagation();
-    console.log(data);
+    rest.handleBanClick(data.email);
+  };
+
+  const handleDeleteClick = (e, data) => {
+    e.stopPropagation();
+    rest.handleDeleteClick(data);
+  };
+
+  const handleSelectChange = (e, data) => {
+    e.stopPropagation();
+    rest.handleSelectChange(e.target.value, data);
+  };
+
+  const handleSearch = (searchValue) => {
+    const searchKey = columns.find((el) => el.searchKey).id;
+    setSearchText(searchValue);
+    setSearchData(
+      data.filter((element) =>
+        element[searchKey].toLowerCase().includes(searchText)
+      )
+    );
+  };
+
+  const LinkRender = (display, value, linkTo) => {
+    return (
+      <TableCell align="left" key={value}>
+        <Link to={`/${linkTo}/${value}`}>{display}</Link>
+      </TableCell>
+    );
+  };
+
+  const SelectRender = (options, value, data, disableStatus) => {
+    return (
+      <TableCell align="left" key={value}>
+        <Select
+          native
+          value={value}
+          onChange={(event) => handleSelectChange(event, data)}
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+          disabled={disableStatus && value === disableStatus}
+        >
+          {options.map((el, index) => {
+            return (
+              <option key={index} value={el}>
+                {el}
+              </option>
+            );
+          })}
+        </Select>
+      </TableCell>
+    );
+  };
+
+  const DeleteButtonRender = (label, data, value) => {
+    return (
+      <TableCell align="left" key={value}>
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={(event) => handleDeleteClick(event, data)}
+        >
+          {label}
+        </Button>
+      </TableCell>
+    );
   };
 
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+    rowsPerPage - Math.min(rowsPerPage, searchData.length - page * rowsPerPage);
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedToolbar numSelected={selected.length} />
+        <EnhancedToolbar
+          numSelected={selected.length}
+          columns={columns}
+          data={data}
+          searchable={searchable}
+          handleSearch={handleSearch}
+          title={title}
+          handleAddClick={handleAddClick}
+        />
         <TableContainer>
           <Table
             className={classes.table}
@@ -149,24 +265,29 @@ export default function CustomTable(props) {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={data.length}
+              rowCount={searchData.length}
               columns={columns}
             />
             <TableBody>
-              {stableSort(data, getComparator(order, orderBy))
+              {stableSort(searchData, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
+                  const isItemSelected = isSelected(row[columns[0]["id"]]);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name)}
+                      onClick={(event) =>
+                        handleClick(
+                          event,
+                          row[columns.find((el) => el.mainKey).id]
+                        )
+                      }
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={index}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -175,40 +296,73 @@ export default function CustomTable(props) {
                           inputProps={{ "aria-labelledby": labelId }}
                         />
                       </TableCell>
-                      {/* <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                      >
-                        {row.name}
-                      </TableCell> */}
-                      {/* <TableCell align="right">{row.calories}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
-                      <TableCell align="right">{row.protein}</TableCell> */}
-                      {Object.values(row).map((el, i) => {
-                        return (
-                          <TableCell
-                            key={i}
-                            align={columns[i].numeric ? "right" : "left"}
-                            component="th"
-                            padding={columns[i].disablePadding ? "none" : ""}
-                          >
-                            {columns[i].button ? (
-                              <Button
-                                color="primary"
-                                variant="contained"
-                                onClick={(event) => handleBanClick(event, row)}
-                              >
-                                {columns[i].label}
-                              </Button>
-                            ) : (
-                              el
-                            )}
-                          </TableCell>
-                        );
-                      })}
+                      {columns
+                        .filter((element) => {
+                          if (element.hidden) {
+                            return false;
+                          }
+                          return true;
+                        })
+                        .map((column, i) => {
+                          let newEl;
+                          if (column.date) {
+                            newEl = formatDate(row[column.id]);
+                          } else {
+                            newEl = row[column.id];
+                          }
+                          if (column.type === "link") {
+                            let display;
+                            let value;
+                            if (newEl[column.display]) {
+                              display = newEl[column.display];
+                            } else {
+                              display = row[column.display];
+                            }
+                            if (newEl[column.value]) {
+                              value = newEl[column.value];
+                            } else {
+                              value = row[column.value];
+                            }
+                            return LinkRender(display, value, column.linkTo);
+                          }
+                          if (column.type === "select") {
+                            return SelectRender(
+                              column.options,
+                              newEl,
+                              row,
+                              column.disableStatus
+                            );
+                          }
+                          if (column.type === "deleteButton") {
+                            return DeleteButtonRender(
+                              column.content,
+                              row,
+                              newEl
+                            );
+                          }
+                          return (
+                            <TableCell
+                              key={`${column["id"]}_${i}`}
+                              align={column.numeric ? "right" : "left"}
+                              id={labelId}
+                              component="th"
+                            >
+                              {column.field === "banButton" ? (
+                                <Button
+                                  color="primary"
+                                  variant="contained"
+                                  onClick={(event) =>
+                                    handleBanClick(event, row)
+                                  }
+                                >
+                                  {newEl ? "Unban" : "Ban"}
+                                </Button>
+                              ) : (
+                                newEl
+                              )}
+                            </TableCell>
+                          );
+                        })}
                     </TableRow>
                   );
                 })}

@@ -1,7 +1,5 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import GroupIcon from "@material-ui/icons/Group";
-import { Typography } from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
 
@@ -29,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
   right: {
     flex: "70%",
-    fontSize: "30px",
+    fontSize: "20px",
     display: "flex",
     alignItems: "center",
   },

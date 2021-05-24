@@ -3,10 +3,12 @@ import { lighten, makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import clsx from "clsx";
+import SearchBar from "../SearchBar/SearchBar";
 
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
@@ -26,10 +28,22 @@ const useToolbarStyles = makeStyles((theme) => ({
   title: {
     flex: "1 1 100%",
   },
+  addButton: {
+    margin: "20px 20px 0",
+  },
 }));
 export default function EnhancedToolbar(props) {
   const classes = useToolbarStyles();
-  const { numSelected } = props;
+  const {
+    numSelected,
+    columns,
+    data,
+    handleSearch,
+    title,
+    searchable,
+    handleAddClick,
+    ...rest
+  } = props;
 
   return (
     <Toolbar
@@ -53,10 +67,26 @@ export default function EnhancedToolbar(props) {
           id="tableTitle"
           component="div"
         >
-          Nutrition
+          {title}
         </Typography>
       )}
-
+      {handleAddClick && (
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={handleAddClick}
+          className={classes.addButton}
+        >
+          Add
+        </Button>
+      )}
+      {searchable && (
+        <SearchBar
+          searchData={data}
+          searchField={columns.find((el) => el.searchKey).id}
+          handleSearch={handleSearch}
+        />
+      )}
       {numSelected > 0 ? (
         <Tooltip title="Delete">
           <IconButton aria-label="delete">

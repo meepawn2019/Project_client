@@ -4,6 +4,9 @@ import QuestionCard from "../../components/QuestionCard/QuestionCard";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import AnswerBox from "../../components/AnswerBox/AnswerBox";
+import NavBar from "../../container/components/NavBar";
+import { useQuery, gql } from "@apollo/client";
+
 const useStyles = makeStyles((theme) => ({
   home: {
     backgroundColor: "rgb(243, 243, 240)",
@@ -17,9 +20,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const USERBYID = gql`
+  query {
+    userById(id: $id) {
+      userName
+      email
+      gender
+      createAt
+      banStatus
+      role
+      birth
+    }
+  }
+`;
+
 export default function Home() {
   const classes = useStyles();
-
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -38,8 +54,10 @@ export default function Home() {
         setErrorText(e);
       });
   }, []);
+
   return (
     <div className={classes.home}>
+      <NavBar />
       {!loading ? (
         error ? (
           <div>{errorText.message}</div>
@@ -53,7 +71,6 @@ export default function Home() {
       ) : (
         <CircularProgress />
       )}
-      <AnswerBox />
     </div>
   );
 }

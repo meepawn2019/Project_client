@@ -1,21 +1,19 @@
 import React, { useState } from "react";
 import {
   Button,
+  Dialog,
+  DialogContent,
   FormControl,
   FormGroup,
-  InputLabel,
-  Input,
-  FormControlLabel,
-  Checkbox,
-  Select,
   TextField,
 } from "@material-ui/core";
 // import Select from "react-select";
 import NativeSelect from "@material-ui/core/NativeSelect";
-import Editor from "../Editor/Editor";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import "./questionModal.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useQuery, gql, useMutation } from "@apollo/client";
+import jwt from "jsonwebtoken";
 
 const topic = [
   "Những lĩnh vực khác",
@@ -55,16 +53,6 @@ const topic = [
   "Khoa học xã hội và nhân văn",
 ];
 
-const options = [
-  { value: "chocolate", label: "Chocolate" },
-  { value: "strawberry", label: "Strawberry" },
-  { value: "vanilla", label: "Vanilla" },
-  { value: "vanilla", label: "Vanilla" },
-  { value: "vanilla", label: "Vanilla" },
-  { value: "vanilla", label: "Vanilla" },
-  { value: "vanilla", label: "Vanilla" },
-];
-
 const useStyles = makeStyles({
   root: {
     position: "absolute",
@@ -84,11 +72,23 @@ const useStyles = makeStyles({
   },
 });
 
+const POST_QUESTION = gql`
+  mutation($question: String!, $owner: ID!) {
+    postQuestion(question: $question, owner: $owner) {
+      id
+      question
+      owner {
+        userName
+      }
+    }
+  }
+`;
+
 export default function QuestionModal(props) {
-  const { handleClose } = props;
+  const { show, handleClose } = props;
   const [formData, setFormData] = useState({});
   const [question, setQuestion] = useState("");
-  const [topicQuestion, setTopicQuestion] = useState("");
+  const [postQuestion] = useMutation(POST_QUESTION);
 
   const classes = useStyles();
 
@@ -98,67 +98,83 @@ export default function QuestionModal(props) {
   }
 
   function onSubmitForm() {
-    console.log(formData);
-  }
-
-  function handleTopicChange(v) {
-    let topic = v.target.options[v.target.selectedIndex].text;
-    setTopicQuestion(topic);
+    const token = localStorage.getItem("token");
+    try {
+      jwt.verify(token, "Graphql_Hoova", function (err, decoded) {
+        console.log(question);
+        console.log(decoded.userId);
+        postQuestion({
+          variables: { question: question, owner: decoded.userId },
+        })
+          .then((data) => {
+            console.log(data);
+          })
+          .catch((error) => {
+            console.log("ERROR in SigninBox ", { error });
+          });
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
-    <div className={classes.root}>
-      <form className={`${classes.center} ${classes.questionForm}`}>
-        <FormGroup className="my-2 d-flex justify-content-between align-items-center flex-row">
-          <div className="d-flex align-items-center">
-            <img
-              height="40"
-              width="40"
-              src="/customer_avatar.png"
-              className="rounded-circle"
-              alt="avatar default"
-            />
-          </div>
-          <div>
-            <FormControl>
-              <NativeSelect>
-                {topic.map((e) => {
-                  return <option key={e}>{e}</option>;
-                })}
-              </NativeSelect>
-            </FormControl>
-            {/* <FormControl as="select" onChange={handleTopicChange}>
+    <Dialog open={show} onClose={handleClose}>
+      <div>
+        <DialogContent>
+          <form className={`${classes.center} ${classes.questionForm}`}>
+            <FormGroup className="my-2 d-flex justify-content-between align-items-center flex-row">
+              <div className="d-flex align-items-center">
+                <img
+                  height="40"
+                  width="40"
+                  src="/customer_avatar.png"
+                  className="rounded-circle"
+                  alt="avatar default"
+                />
+              </div>
+              <div>
+                <FormControl>
+                  <NativeSelect>
+                    {topic.map((e) => {
+                      return <option key={e}>{e}</option>;
+                    })}
+                  </NativeSelect>
+                </FormControl>
+                {/* <FormControl as="select" onChange={handleTopicChange}>
                 {topic.map((e) => {
                   return <option key={e}>{e}</option>;
                 })}
               </FormControl> */}
-          </div>
-        </FormGroup>
-        <FormControl fullWidth={true} className="my-3">
-          <TextField
-            label="Câu hỏi"
-            id="my-input"
-            placeholder="Bắt đầu bằng câu hỏi tại sao vì sao ..."
-            onChange={handleQuestion}
-          />
-        </FormControl>
-      </form>
+              </div>
+            </FormGroup>
+            <FormControl fullWidth={true} className="my-3">
+              <TextField
+                label="Câu hỏi"
+                id="my-input"
+                placeholder="Bắt đầu bằng câu hỏi tại sao vì sao ..."
+                onChange={handleQuestion}
+              />
+            </FormControl>
+          </form>
 
-      <div className={`${classes.center} text-right mt-3`}>
-        <Button
-          variant="contained"
-          type="submit"
-          onClick={onSubmitForm}
-          style={{
-            width: "140px",
-            background: "rgb(241, 185, 84)",
-            borderColor: "rgb(241, 185, 84)",
-          }}
-          className="ml-1"
-        >
-          Tiếp
-        </Button>
+          <div className={`${classes.center} text-right mt-3`}>
+            <Button
+              variant="contained"
+              type="submit"
+              color="primary"
+              onClick={onSubmitForm}
+              style={{
+                width: "140px",
+                borderColor: "rgb(241, 185, 84)",
+              }}
+              className="ml-1"
+            >
+              Tiếp
+            </Button>
+          </div>
+        </DialogContent>
       </div>
-    </div>
+    </Dialog>
   );
 }

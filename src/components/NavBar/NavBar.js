@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -8,7 +8,6 @@ import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
-// import Modal from "@material-ui/core/Modal";
 import SearchIcon from "@material-ui/icons/Search";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MoreIcon from "@material-ui/icons/MoreVert";
@@ -16,10 +15,10 @@ import Edit from "@material-ui/icons/Edit";
 import AskQuestion from "./AskQuestion";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import Slide from "@material-ui/core/Slide";
-import authContext from "../../../src/appContext";
 import ModalBody from "../Modal/ModalBody";
 import axios from "axios";
-// import RealModalLogi
+import AuthContext from "../../appContext";
+import QuestionModal from "../Modal/QuestionModal";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -119,10 +118,9 @@ function HideOnScroll(props) {
 }
 
 export default function NavBar(props) {
-  const id = props.id
+  const { userInformation } = props;
   const classes = useStyles();
   const [modalShow, setModalShow] = React.useState(false);
-  const [modalLogInShow, setModalLoginShow] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [show, setShow] = useState(false);
@@ -136,7 +134,8 @@ export default function NavBar(props) {
 
   const logOut = (event) => {
     handleMenuClose();
-    alert("LogOut");
+    localStorage.removeItem("token");
+    window.location.reload();
   };
   const logIn = (event) => {
     handleMenuClose();
@@ -171,19 +170,21 @@ export default function NavBar(props) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem
-        onClick={handleMenuClose}
-        component={Link}
-        to={`/profile/${id}`}
-      >
-        Tài khoản của tôi
-      </MenuItem>
+      {userInformation && (
+        <MenuItem
+          onClick={handleMenuClose}
+          component={Link}
+          to={`/profile/${userInformation.id}`}
+        >
+          Tài khoản của tôi
+        </MenuItem>
+      )}
 
       <MenuItem onClick={handleMenuClose} component={Link} to="/setting">
         Cài đặt
       </MenuItem>
-      <MenuItem onClick={logOut}>Đăng xuất</MenuItem>
-      <MenuItem onClick={logIn}>Đăng nhập</MenuItem>
+      {userInformation && <MenuItem onClick={logOut}>Đăng xuất</MenuItem>}
+      {!userInformation && <MenuItem onClick={logIn}>Đăng nhập</MenuItem>}
     </Menu>
   );
 
@@ -226,10 +227,7 @@ export default function NavBar(props) {
 
   return (
     <div className={classes.grow}>
-      <AskQuestion
-        modalShow={modalShow}
-        handleClose={() => setModalShow(false)}
-      />
+      <QuestionModal show={modalShow} handleClose={() => setModalShow(false)} />
       {/* <RealLoginModal
         modalLogInShow={modalLogInShow}
         handleLogInModalClose={handleLogInModalClose}

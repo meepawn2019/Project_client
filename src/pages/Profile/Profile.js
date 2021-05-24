@@ -24,6 +24,7 @@ import Questions from "./Questions";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { Button } from "@material-ui/core";
+import NavBar from "../../components/NavBar/NavBar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,7 +69,6 @@ const useStyles = makeStyles((theme) => ({
     margin: "10px",
     fontSize: "20px",
     fontWeight: "bold",
-
   },
 }));
 
@@ -92,16 +92,18 @@ export default function Profile() {
       })
       .catch((e) => {
         setLoading(false);
-        setError(true)});
+        setError(true);
+      });
   }, [id]);
 
   return (
     <div className={classes.root}>
+      <NavBar />
       {loading ? (
         <CircularProgress />
       ) : error ? (
         <div>error</div>
-      ) : 
+      ) : (
         <div className={classes.root}>
           <div className={classes.coverPhoto}>
             <img
@@ -118,7 +120,7 @@ export default function Profile() {
             />
           </div>
 
-          <Typography className={classes.userName} align='center'>
+          <Typography className={classes.userName} align="center">
             {user.userName || "Null"}
           </Typography>
 
@@ -130,8 +132,7 @@ export default function Profile() {
             friend={user.friend}
           />
         </div>
-      }
-      
+      )}
     </div>
   );
 }

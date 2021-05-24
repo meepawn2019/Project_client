@@ -75,9 +75,8 @@ export default function CustomTable(props) {
       if (type === "link") {
         setSearchData(
           data.filter((element) => {
-            return element[searchKey][valueLink]
-              .toLowerCase()
-              .includes(searchText);
+            console.log(element[searchKey]);
+            return element[searchKey].toLowerCase().includes(searchText);
           })
         );
       } else {

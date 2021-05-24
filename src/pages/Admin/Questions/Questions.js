@@ -34,24 +34,24 @@ const AppQuery = gql`
   }
 `;
 
-// const REPORT_USER_QUERY = gql`
-//   query {
-//     reportUser {
-//       id
-//       sender {
-//         id
-//         userName
-//       }
-//       reportUser {
-//         id
-//         userName
-//       }
-//       content
-//       status
-//       createAt
-//     }
-//   }
-// `;
+const REPORT_QUESTION_QUERY = gql`
+  query {
+    questionReport {
+      id
+      sender {
+        id
+        userName
+      }
+      reportQuestion {
+        id
+        question
+      }
+      content
+      status
+      createAt
+    }
+  }
+`;
 
 // const BAN_MUTATION = gql`
 //   mutation BanUser($email: String!) {
@@ -99,6 +99,7 @@ const headQuestionCell = [
     display: "question",
     value: "id",
     linkTo: "question",
+    searchKey: true,
   },
   {
     id: "createAt",
@@ -108,28 +109,119 @@ const headQuestionCell = [
   },
 ];
 
+const headReportCell = [
+  {
+    id: "id",
+    field: "id",
+    numberic: false,
+    hidden: true,
+    mainKey: true,
+  },
+  {
+    id: "sender",
+    field: "sender",
+    numberic: false,
+    label: "Người báo cáo",
+    type: "link",
+    display: "userName",
+    value: "id",
+    linkTo: "profile",
+  },
+  {
+    id: "reportQuestion",
+    field: "reportUser",
+    numberic: false,
+    label: "Câu hỏi vi phạm",
+    type: "link",
+    display: "question",
+    value: "id",
+    linkTo: "question",
+  },
+  {
+    id: "content",
+    field: "content",
+    numberic: false,
+    label: "Nội dung vi phạm",
+  },
+  {
+    id: "status",
+    field: "status",
+    numberic: false,
+    label: "Trạng thái",
+    type: "select",
+    options: ["Hold", "Solved"],
+    disableStatus: "Solved",
+  },
+  {
+    id: "createAt",
+    field: "createAt",
+    numberic: false,
+    label: "Ngày báo cáo",
+  },
+];
+
+const REPORT_MUTATION = gql`
+  mutation ReportQuestionHandleMutation($id: ID!, $status: String!) {
+    updateReportQuestionMutation(id: $id, status: $status) {
+      id
+      status
+    }
+  }
+`;
+
 export default function Question(props) {
   const { loading, error, data, refetch } = useQuery(AppQuery);
+  const {
+    loading: reportLoading,
+    error: reportError,
+    data: reportData,
+    refetch: refetchReport,
+  } = useQuery(REPORT_QUESTION_QUERY);
   const [report, setReport] = useState([]);
+  const [updateReport] = useMutation(REPORT_MUTATION);
   const classes = useStyles();
 
   useEffect(() => {
-    console.log(data);
-  }, [error, data]);
+    console.log("Error", { reportError });
+  }, [reportData, reportError]);
 
-  if (loading) {
+  if (loading || reportLoading) {
     return <LoadingDialog show={loading} />;
   }
-  if (error) {
+  if (error || reportError) {
     // console.log(error);
     // return <p>Error...</p>;
   }
+
+  const handleSelectReportStatus = (selectedValue, data) => {
+    console.log(data.id);
+    updateReport({ variables: { id: data.id, status: selectedValue } })
+      .then((res) => {
+        const isSelected = (element) => element.id === data.id;
+        const selectedIndex = report.findIndex(isSelected);
+        let newReport = [...report];
+        newReport[selectedIndex] = {
+          ...newReport[selectedIndex],
+          status: selectedValue,
+        };
+        setReport(newReport);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <div className={classes.container}>
       <CustomTable
         columns={headQuestionCell}
         data={data.question}
         title="Câu hỏi"
+      />
+      <CustomTable
+        columns={headReportCell}
+        data={reportData.questionReport}
+        title="Báo cáo vi phạm"
       />
     </div>
   );

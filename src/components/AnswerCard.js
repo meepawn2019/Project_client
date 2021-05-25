@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import ReactHtmlParser from "react-html-parser";
 import { makeStyles } from "@material-ui/core/styles";
 
 import Avatar from "@material-ui/core/Avatar";
-import Typography from "@material-ui/core/Typography";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
@@ -18,7 +17,6 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import MUILink from "@material-ui/core/Link";
 
-import ShareIcon from "@material-ui/icons/Share";
 import ThumbDown from "@material-ui/icons/ThumbDown";
 import ThumbUp from "@material-ui/icons/ThumbUp";
 import MoreVert from "@material-ui/icons/MoreVert";
@@ -290,12 +288,6 @@ function AnswerCard(props) {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    currentUser: state.currentUser.user,
-    user: state.userInfo,
-  };
-};
 const mapDispatchToProps = {
   likeAnAnswer,
   dislikeAnAnswer,

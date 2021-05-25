@@ -12,13 +12,10 @@ import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
 import Badge from "@material-ui/core/Badge";
 import MUILink from "@material-ui/core/Link";
-// import Divider from "@material-ui/core/Divider";
 //icon
-import ShareIcon from "@material-ui/icons/Share";
 import MoreVert from "@material-ui/icons/MoreVert";
 import ThumbUp from "@material-ui/icons/ThumbUp";
 import ThumbDown from "@material-ui/icons/ThumbDown";
@@ -33,7 +30,6 @@ import { connect } from "react-redux";
 import { useState } from "react";
 
 import { deleteAnUserAnswer } from "../redux/action/userInfoAction";
-import { from } from "form-data";
 
 const useStyles = makeStyles((theme) => ({
   root: {

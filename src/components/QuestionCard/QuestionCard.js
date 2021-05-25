@@ -137,7 +137,7 @@ function QuestionCard(props) {
   );
   return (
     <Card className={classes.root}>
-      {currentUser._id == question.owner._id ? ownerMenu : notOwnerMenu}
+      {currentUser._id === question.owner._id ? ownerMenu : notOwnerMenu}
       <CardHeader
         avatar={
           <MUILink component={Link} to={`/profile/${question.owner._id}`}>

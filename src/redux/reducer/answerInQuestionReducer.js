@@ -58,7 +58,7 @@ export default function answerInQuestionReducer(state = initStore, action) {
             ...state[id].question,
             commentCount: state[id].question.commentCount - 1,
           },
-          answer: state[id].answer.filter((a) => a._id != content),
+          answer: state[id].answer.filter((a) => a._id !== content),
         },
       };
 
@@ -69,7 +69,7 @@ export default function answerInQuestionReducer(state = initStore, action) {
       if (!state[id].answer) return { ...state };
       let newAnswerList = [...state[id].answer];
 
-      let answerIndex = newAnswerList.findIndex((a) => a._id == answerId);
+      let answerIndex = newAnswerList.findIndex((a) => a._id === answerId);
       let answer = { ...newAnswerList[answerIndex] };
 
       let like = [...answer.like];
@@ -77,8 +77,8 @@ export default function answerInQuestionReducer(state = initStore, action) {
 
       let likeCount = answer.likeCount || 0;
       let dislikeCount = answer.dislikeCount || 0;
-      let likeIndex = like.findIndex((id) => id == userId);
-      let dislikeIndex = dislike.findIndex((id) => id == userId);
+      let likeIndex = like.findIndex((id) => id === userId);
+      let dislikeIndex = dislike.findIndex((id) => id === userId);
 
       if (likeIndex >= 0) {
         like.splice(likeIndex, 1);
@@ -121,7 +121,7 @@ export default function answerInQuestionReducer(state = initStore, action) {
       if (!state[id].answer) return { ...state };
       let newAnswerList = [...state[id].answer];
 
-      let answerIndex = newAnswerList.findIndex((a) => a._id == answerId);
+      let answerIndex = newAnswerList.findIndex((a) => a._id === answerId);
       let answer = { ...newAnswerList[answerIndex] };
 
       let like = [...answer.like];
@@ -129,8 +129,8 @@ export default function answerInQuestionReducer(state = initStore, action) {
 
       let likeCount = answer.likeCount || 0;
       let dislikeCount = answer.dislikeCount || 0;
-      let likeIndex = like.findIndex((id) => id == userId);
-      let dislikeIndex = dislike.findIndex((id) => id == userId);
+      let likeIndex = like.findIndex((id) => id === userId);
+      let dislikeIndex = dislike.findIndex((id) => id === userId);
 
       if (dislikeIndex >= 0) {
         dislike.splice(dislikeIndex, 1);

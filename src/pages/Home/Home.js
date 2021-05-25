@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import QuestionCard from "../../components/QuestionCard/QuestionCard";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { connect } from "react-redux";
 import {
@@ -36,7 +35,7 @@ function Home(props) {
   const questions = homeQuestion.question;
   // const [questions, setQuestions] = useState([]);
   const tab = useQuery().get("sort");
-  let finished = Boolean(homeQuestion.finished);
+  // let finished = Boolean(homeQuestion.finished);
   let isLast = Boolean(homeQuestion.isLast);
 
   let loadingNew = false;
@@ -50,7 +49,7 @@ function Home(props) {
     loadingNew = true;
 
     axios
-      .get(`/getQuestions/${skip}${tab == "newest" ? "?sort=newest" : ""}`)
+      .get(`/getQuestions/${skip}${tab === "newest" ? "?sort=newest" : ""}`)
       .then((data) => {
         let content = data.data.questions;
         isLast = data.data.isLast;

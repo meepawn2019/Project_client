@@ -53,7 +53,7 @@ export default function userInfoReducer(state = initStore, action) {
           answer: {
             ...state[id]?.answer,
             content:
-              state[id]?.answer?.content?.filter((a) => a._id != content) ||
+              state[id]?.answer?.content?.filter((a) => a._id !== content) ||
               null,
           },
         },
@@ -65,7 +65,7 @@ export default function userInfoReducer(state = initStore, action) {
 
       let newAnswerList = [...state[id].answer?.content];
 
-      let answerIndex = newAnswerList.findIndex((a) => a._id == answerId);
+      let answerIndex = newAnswerList.findIndex((a) => a._id === answerId);
       let answer = { ...newAnswerList[answerIndex] };
 
       let like = [...answer.like];
@@ -73,8 +73,8 @@ export default function userInfoReducer(state = initStore, action) {
 
       let likeCount = answer.likeCount || 0;
       let dislikeCount = answer.dislikeCount || 0;
-      let likeIndex = like.findIndex((id) => id == userId);
-      let dislikeIndex = dislike.findIndex((id) => id == userId);
+      let likeIndex = like.findIndex((id) => id === userId);
+      let dislikeIndex = dislike.findIndex((id) => id === userId);
 
       if (likeIndex >= 0) {
         like.splice(likeIndex, 1);
@@ -119,7 +119,7 @@ export default function userInfoReducer(state = initStore, action) {
 
       let newAnswerList = [...state[id].answer?.content];
 
-      let answerIndex = newAnswerList.findIndex((a) => a._id == answerId);
+      let answerIndex = newAnswerList.findIndex((a) => a._id === answerId);
       let answer = { ...newAnswerList[answerIndex] };
 
       let like = [...answer.like];
@@ -127,8 +127,8 @@ export default function userInfoReducer(state = initStore, action) {
 
       let likeCount = answer.likeCount || 0;
       let dislikeCount = answer.dislikeCount || 0;
-      let likeIndex = like.findIndex((id) => id == userId);
-      let dislikeIndex = dislike.findIndex((id) => id == userId);
+      let likeIndex = like.findIndex((id) => id === userId);
+      let dislikeIndex = dislike.findIndex((id) => id === userId);
 
       if (dislikeIndex >= 0) {
         dislike.splice(dislikeIndex, 1);
@@ -202,7 +202,7 @@ export default function userInfoReducer(state = initStore, action) {
           question: {
             ...state[id]?.question,
             content:
-              state[id]?.question?.content?.filter((q) => q._id != content) ||
+              state[id]?.question?.content?.filter((q) => q._id !== content) ||
               null,
             isLast: isLast,
           },

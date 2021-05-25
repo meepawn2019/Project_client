@@ -1,5 +1,4 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
@@ -28,16 +27,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
+// function useQuery() {
+//   return new URLSearchParams(useLocation().search);
+// }
 var tabList = ["questions", "info"];
 export default function ProfileTab(props) {
   const classes = useStyles();
   const url = useRouteMatch().url;
   const query = props.initTab;
 
-  let index = tabList.findIndex((val) => val == query) + 1;
+  let index = tabList.findIndex((val) => val === query) + 1;
   // let index = query ? 1 : 0;
   const [value, setValue] = React.useState(index);
 

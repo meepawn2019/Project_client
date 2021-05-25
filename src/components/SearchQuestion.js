@@ -1,14 +1,7 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import MenuItem from "@material-ui/core/MenuItem";
-import {
-  Divider,
-  Typography,
-  Button,
-  MenuList,
-  CircularProgress,
-} from "@material-ui/core";
+import { Typography, MenuList, CircularProgress } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export default function SearchQuestion(props) {
-  const { loading, searchList, searchShow, onDismiss } = props;
+  const { loading, searchList, onDismiss } = props;
   const classes = useStyles();
 
   const dismiss = () => {

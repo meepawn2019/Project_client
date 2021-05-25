@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, Redirect } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 //com
 import Typography from "@material-ui/core/Typography";
@@ -66,7 +66,7 @@ function Question(props) {
     !Boolean(answerInQuestion?.answer)
   );
 
-  const [error, setError] = useState(false);
+  // const [error, setError] = useState(false);
   const [answerBoxShow, setAnswerBoxShow] = useState(false);
 
   const scrollListener = (event) => {
@@ -88,7 +88,8 @@ function Question(props) {
           loadingNew = false;
         })
         .catch((e) => {
-          setError(true);
+          // setError(true);
+          console.log(e);
         });
     }
   };
@@ -106,7 +107,7 @@ function Question(props) {
           setLoadingQuestion(false);
         })
         .catch((e) => {
-          setError(true);
+          // setError(true);
 
           props.history.push("/");
         });
@@ -125,7 +126,8 @@ function Question(props) {
           setLoadingComment(false);
         })
         .catch((e) => {
-          setError(true);
+          // setError(true);
+          console.log(e);
         });
     }
 

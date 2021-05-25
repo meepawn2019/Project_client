@@ -1,5 +1,3 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Box, Typography } from "@material-ui/core";
 
@@ -18,7 +16,6 @@ export default function Questions(props) {
   const classes = useStyles();
 
   const user = props.user;
-  //   useEffect(() => console.log(user));
   return (
     <div className={classes.home}>
       <Box className={classes.box}>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 
 import Avatar from "@material-ui/core/Avatar";
@@ -17,9 +17,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import {
   loadAnUser,
   loadAnUserAnswer,
-  loadAnUserFriend,
   loadAnUserQuestion,
-  loadAnUserTopic,
   changeUserAvatar,
   changeUserCoverImage,
 } from "../../redux/action/userInfoAction";
@@ -97,7 +95,7 @@ function Profile(props) {
   const answer = props.user[id]?.answer;
   const question = props.user[id]?.question;
   const currentUser = props.currentUser.user;
-  const isOwner = currentUser?._id == id;
+  const isOwner = currentUser?._id === id;
 
   const {
     loadAnUser,
@@ -108,8 +106,8 @@ function Profile(props) {
   } = props;
 
   const [loadingUser, setLoadingUser] = useState(!Boolean(user));
-  const [loadingAnswer, setLoadingAnswer] = useState(false);
-  const [loadingQuestion, setLoadingQuestion] = useState(false);
+  // const [loadingAnswer, setLoadingAnswer] = useState(false);
+  // const [loadingQuestion, setLoadingQuestion] = useState(false);
   const [error, setError] = useState(false);
 
   const [openCrop, setOpenCrop] = useState(false);
@@ -170,7 +168,7 @@ function Profile(props) {
   };
   const scrollListener = (event) => {
     const rect = document.body.getBoundingClientRect().bottom;
-    if (tab == "questions") {
+    if (tab === "questions") {
       if (rect < 2000 && !isQuestionLoading && !isLastQuestion) {
         isQuestionLoading = true;
 

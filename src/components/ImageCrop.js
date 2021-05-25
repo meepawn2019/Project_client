@@ -1,10 +1,10 @@
 import axios from "axios";
-import React, { PureComponent, useState } from "react";
+import React, { useState } from "react";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
 import FromData from "form-data";
-import { Dialog, Modal, Button, Typography, Box } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import makeStyles from "@material-ui/styles/makeStyles";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,8 +29,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ImageCrop(props) {
-  const { open, setOpen, onClose, aspect, apiUrl, getNewUrl, getError, file } =
-    props;
+  const { onClose, aspect, apiUrl, getNewUrl, getError, file } = props;
 
   const isAvatar = apiUrl.includes("Avatar");
   const [isChanging, setIsChanging] = useState(false);

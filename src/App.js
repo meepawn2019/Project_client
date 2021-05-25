@@ -2,10 +2,6 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import NavBar from "./components/NavBar/NavBar";
 import AuthPage from "./pages/AuthPage";
 import { connect } from "react-redux";
-import {
-  loadCurrentUser,
-  clearCurrentUser,
-} from "./redux/action/currentUserAction";
 import Home from "./pages/Home/Home";
 import Profile from "./pages/Profile/Profile";
 
@@ -39,8 +35,4 @@ function mapStateToProps(state) {
   };
 }
 
-const mapDispatchToProps = {
-  loadCurrentUser,
-  clearCurrentUser,
-};
 export default connect(mapStateToProps)(App);

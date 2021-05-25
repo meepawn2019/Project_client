@@ -14,9 +14,6 @@ import axios from "axios";
 import { loadCurrentUser } from "../redux/action/currentUserAction";
 import { connect } from "react-redux";
 
-const re =
-  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
 const useStyles = makeStyle((theme) => ({
   root: {
     height: "100vh",
@@ -36,7 +33,6 @@ const useStyles = makeStyle((theme) => ({
 
 function ChangePassword(props) {
   const token = localStorage.getItem("token");
-  const loadUser = props.loadCurrentUser;
   const classes = useStyles();
   const [checkedBox, setCheckedBox] = useState(false);
   const [reveal, setReveal] = useState(false);

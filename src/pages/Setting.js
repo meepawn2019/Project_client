@@ -107,7 +107,6 @@ function Setting(props) {
     setNewBirth(d.toISOString());
   };
   const onGenderChange = (event, val) => {
-    let text = event.target.value;
     setNewGender(val);
     console.log(val);
   };

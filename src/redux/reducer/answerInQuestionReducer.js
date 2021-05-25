@@ -65,7 +65,8 @@ export default function answerInQuestionReducer(state = initStore, action) {
     case "LIKE_AN_ANSWER": {
       let userId = content.userId;
       let answerId = content.answerId;
-
+      if (!state[id]) return { ...state };
+      if (!state[id].answer) return { ...state };
       let newAnswerList = [...state[id].answer];
 
       let answerIndex = newAnswerList.findIndex((a) => a._id == answerId);
@@ -116,7 +117,8 @@ export default function answerInQuestionReducer(state = initStore, action) {
     case "DISLIKE_AN_ANSWER": {
       let userId = content.userId;
       let answerId = content.answerId;
-
+      if (!state[id]) return { ...state };
+      if (!state[id].answer) return { ...state };
       let newAnswerList = [...state[id].answer];
 
       let answerIndex = newAnswerList.findIndex((a) => a._id == answerId);

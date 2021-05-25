@@ -92,6 +92,24 @@ function QuestionCard(props) {
       });
   };
 
+  const reportQuestion = () => {
+    axios
+      .post(
+        "/report?type=Question",
+        {
+          reported: question._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      // .then((d) => console.log(d.data))
+      .catch((e) => console.log(e.response));
+    handleClose();
+  };
+
   const ownerMenu = (
     <Menu
       id="simple-menu"
@@ -102,7 +120,7 @@ function QuestionCard(props) {
     >
       <MenuItem onClick={deleteQuestionFunc}>Xóa câu hỏi</MenuItem>
 
-      <MenuItem onClick={handleClose}>Sửa câu hỏi</MenuItem>
+      {/* <MenuItem onClick={handleClose}>Sửa câu hỏi</MenuItem> */}
     </Menu>
   );
 
@@ -114,7 +132,7 @@ function QuestionCard(props) {
       open={Boolean(menuOpen)}
       onClose={handleClose}
     >
-      <MenuItem onClick={handleClose}>Báo cáo</MenuItem>
+      <MenuItem onClick={reportQuestion}>Báo cáo</MenuItem>
     </Menu>
   );
   return (
@@ -138,7 +156,11 @@ function QuestionCard(props) {
             <p>{question.owner.userName}</p>
           </MUILink>
         }
-        subheader={new Date(question.createAt).toLocaleDateString()}
+        subheader={`${new Date(
+          question.createAt
+        ).toLocaleDateString()} ${new Date(
+          question.createAt
+        ).toLocaleTimeString()}`}
       />
 
       <MUILink component={Link} to={`/question/${question._id}`}>
@@ -162,7 +184,14 @@ function QuestionCard(props) {
           </IconButton>
         </Tooltip>
         <Tooltip title="Chia sẻ">
-          <IconButton aria-label="share">
+          <IconButton
+            aria-label="share"
+            onClick={() => {
+              navigator.clipboard.writeText(
+                `localhost:3000/question/${question._id}`
+              );
+            }}
+          >
             <ShareIcon />
           </IconButton>
         </Tooltip>

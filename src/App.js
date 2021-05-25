@@ -11,14 +11,7 @@ import Profile from "./pages/Profile/Profile";
 
 import Setting from "./pages/Setting";
 import Question from "./pages/Question/Question";
-import ChangePassword from "./pages/ChangePassword/ChangePassword";
-
-import QuestionModal from "./components/Modal/QuestionModal";
-import AnswerBox from "./components/AnswerBox/AnswerBox";
-import Answer from "./pages/Answer/Answer";
-
-import AnswerCard from "./components/AnswerCard";
-// import ImageCrop from "./ImageCrop";
+import ChangePassword from "./pages/ChangePassword";
 
 function App(props) {
   const user = props.user.user;
@@ -34,7 +27,6 @@ function App(props) {
         <Route path="/setting" component={Setting}></Route>
 
         <Route path="/changepassword" component={ChangePassword}></Route>
-        <Route path="/postquestion" component={QuestionModal}></Route>
         <Route path="/question/:id" component={Question}></Route>
         {/* <Route path="/soso2" component={ImageCrop}></Route> */}
       </Switch>

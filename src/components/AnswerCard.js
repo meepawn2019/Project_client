@@ -16,6 +16,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import MUILink from "@material-ui/core/Link";
 
 import ShareIcon from "@material-ui/icons/Share";
 import ThumbDown from "@material-ui/icons/ThumbDown";
@@ -31,7 +32,11 @@ import {
   deleteAnAnswer,
 } from "../redux/action/answerInQuestionAction";
 
-import { deleteAnUserAnswer } from "../redux/action/userInfoAction";
+import {
+  likeAnUserAnswer,
+  dislikeAnUserAnswer,
+  deleteAnUserAnswer,
+} from "../redux/action/userInfoAction";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -75,9 +80,17 @@ function AnswerCard(props) {
   let key = props.keyNow;
   const classes = useStyles();
   const user = comment.owner;
-  const date =
-    new Date(comment.createAt).toLocaleDateString() || "September 14, 2016";
+  const date = new Date(comment.createAt);
   const token = localStorage.getItem("token");
+
+  const {
+    likeAnAnswer,
+    likeAnUserAnswer,
+    dislikeAnAnswer,
+    dislikeAnUserAnswer,
+    deleteAnAnswer,
+    deleteAnUserAnswer,
+  } = props;
 
   function like() {
     axios
@@ -86,13 +99,20 @@ function AnswerCard(props) {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then()
+      .then(console.log)
       .catch(console.log);
     likeAnAnswer({
       id: comment.question._id,
       content: {
         answerId: comment._id,
         userId: currentUser._id,
+      },
+    });
+    likeAnUserAnswer({
+      id: comment.owner._id,
+      content: {
+        userId: currentUser._id,
+        answerId: comment._id,
       },
     });
   }
@@ -113,6 +133,13 @@ function AnswerCard(props) {
         userId: currentUser._id,
       },
     });
+    dislikeAnUserAnswer({
+      id: comment.owner._id,
+      content: {
+        answerId: comment._id,
+        userId: currentUser._id,
+      },
+    });
   }
   const deleteAnswer = () => {
     axios
@@ -126,6 +153,24 @@ function AnswerCard(props) {
         deleteAnAnswer({ id: comment.question._id, answerId: comment._id });
         deleteAnUserAnswer({ id: currentUser._id, content: comment._id });
       });
+  };
+
+  const reportAnswer = () => {
+    axios
+      .post(
+        "/report?type=Comment",
+        {
+          reported: comment._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      // .then(() => console.log("ok"))
+      .catch((e) => console.log(e.response));
+    handleClose();
   };
 
   const [menuOpen, setMenuOpen] = useState(null);
@@ -160,7 +205,7 @@ function AnswerCard(props) {
       open={Boolean(menuOpen)}
       onClose={handleClose}
     >
-      <MenuItem onClick={handleClose}>Báo cáo</MenuItem>
+      <MenuItem onClick={reportAnswer}>Báo cáo</MenuItem>
     </Menu>
   );
 
@@ -169,17 +214,23 @@ function AnswerCard(props) {
       {currentUser._id === comment.owner._id ? ownerMenu : notOwnerMenu}
       <CardHeader
         avatar={
-          <Avatar
-            aria-label="recipe"
-            key={key}
-            src={
-              user.avatar ||
-              "https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
-            }
-          />
+          <MUILink component={Link} to={`/profile/${comment.owner._id}`}>
+            <Avatar
+              aria-label="recipe"
+              key={key}
+              src={
+                user.avatar ||
+                "https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
+              }
+            />
+          </MUILink>
         }
-        title={user.userName}
-        subheader={date}
+        title={
+          <MUILink component={Link} to={`/profile/${comment.owner._id}`}>
+            {user.userName}
+          </MUILink>
+        }
+        subheader={date.toLocaleDateString() + " " + date.toLocaleTimeString()}
       />
       <CardContent>
         <Button component={Link} to={`/question/${comment.question._id}`}>
@@ -199,7 +250,13 @@ function AnswerCard(props) {
               badgeContent={comment.likeCount}
               color="secondary"
             >
-              <ThumbUp />
+              <ThumbUp
+                color={
+                  comment.like?.includes(currentUser._id)
+                    ? "secondary"
+                    : "action"
+                }
+              />
             </Badge>
           </IconButton>
         </Tooltip>
@@ -207,16 +264,22 @@ function AnswerCard(props) {
         <Tooltip title="Down Vote">
           <IconButton aria-label="dislike" onClick={dislike}>
             <Badge badgeContent={comment.dislike.length} color="secondary">
-              <ThumbDown />
+              <ThumbDown
+                color={
+                  comment.dislike?.includes(currentUser._id)
+                    ? "secondary"
+                    : "action"
+                }
+              />
             </Badge>
           </IconButton>
         </Tooltip>
 
-        <Tooltip title="Share">
+        {/* <Tooltip title="Share">
           <IconButton aria-label="share">
             <ShareIcon />
           </IconButton>
-        </Tooltip>
+        </Tooltip> */}
         <Tooltip title="More">
           <IconButton aria-label="more" onClick={onClick}>
             <MoreVert />
@@ -230,6 +293,7 @@ function AnswerCard(props) {
 const mapStateToProps = (state) => {
   return {
     currentUser: state.currentUser.user,
+    user: state.userInfo,
   };
 };
 const mapDispatchToProps = {
@@ -237,6 +301,8 @@ const mapDispatchToProps = {
   dislikeAnAnswer,
   deleteAnAnswer,
   deleteAnUserAnswer,
+  likeAnUserAnswer,
+  dislikeAnUserAnswer,
 };
 
 export default connect(null, mapDispatchToProps)(AnswerCard);

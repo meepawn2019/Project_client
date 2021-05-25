@@ -26,7 +26,7 @@ const useStyles = makeStyle((theme) => ({
   },
 
   auth: {
-    width: 500,
+    maxWidth: 500,
     height: 300,
     // border: "1px solid",
   },
@@ -309,19 +309,19 @@ function AuthPage(props) {
           </FormControl>
         )}
         {modalType === "login" && (
-          <FormControl className="mb-4 mt-4">
+          <FormControl className="float-right mb-4 mt-4">
             <Button
               disabled={disable}
               onClick={handleRegisterClick}
               variant="contained"
               color="secondary"
             >
-              {`Đăng ký`}
+              Đăng ký
             </Button>
           </FormControl>
         )}
         {modalType !== "login" && (
-          <FormControl className="mb-4 mt-4">
+          <FormControl className=" mb-4 mt-4">
             <Button
               disabled={disable}
               onClick={handleLoginClick}

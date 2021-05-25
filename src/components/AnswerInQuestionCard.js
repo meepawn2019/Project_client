@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import ReactHtmlParser from "react-html-parser";
 //com
@@ -14,6 +15,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
 import Badge from "@material-ui/core/Badge";
+import MUILink from "@material-ui/core/Link";
 // import Divider from "@material-ui/core/Divider";
 //icon
 import ShareIcon from "@material-ui/icons/Share";
@@ -31,6 +33,7 @@ import { connect } from "react-redux";
 import { useState } from "react";
 
 import { deleteAnUserAnswer } from "../redux/action/userInfoAction";
+import { from } from "form-data";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -82,7 +85,7 @@ function AnswerInQuestionCard(props) {
 
   const classes = useStyles();
 
-  const user = comment.owner.userName || "Huy";
+  const user = comment?.owner?.userName || "Huy";
   const date =
     new Date(comment.createAt).toLocaleDateString() +
     " " +
@@ -138,6 +141,24 @@ function AnswerInQuestionCard(props) {
         deleteAnUserAnswer({ id: currentUser._id, content: comment._id });
       });
   };
+
+  const reportAnswer = () => {
+    axios
+      .post(
+        "/report?type=Comment",
+        {
+          reported: comment._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      // .then(() => console.log("ok"))
+      .catch((e) => console.log(e.response));
+    handleClose();
+  };
   const [menuOpen, setMenuOpen] = useState(null);
 
   const onClick = (event) => {
@@ -158,7 +179,7 @@ function AnswerInQuestionCard(props) {
     >
       <MenuItem onClick={deleteAnswer}>Xóa câu trả lời</MenuItem>
 
-      <MenuItem onClick={handleClose}>Sửa câu trả lời</MenuItem>
+      {/* <MenuItem onClick={handleClose}>Sửa câu trả lời</MenuItem> */}
     </Menu>
   );
 
@@ -170,7 +191,7 @@ function AnswerInQuestionCard(props) {
       open={Boolean(menuOpen)}
       onClose={handleClose}
     >
-      <MenuItem onClick={handleClose}>Báo cáo</MenuItem>
+      <MenuItem onClick={reportAnswer}>Báo cáo</MenuItem>
     </Menu>
   );
 
@@ -179,13 +200,19 @@ function AnswerInQuestionCard(props) {
       {currentUser._id === comment.owner._id ? ownerMenu : notOwnerMenu}
       <CardHeader
         avatar={
-          <Avatar
-            aria-label="recipe"
-            className={classes.avatar}
-            src={comment.owner.avatar}
-          />
+          <MUILink component={Link} to={`/profile/${comment.owner._id}`}>
+            <Avatar
+              aria-label="recipe"
+              className={classes.avatar}
+              src={comment.owner.avatar}
+            />
+          </MUILink>
         }
-        title={user}
+        title={
+          <MUILink component={Link} to={`/profile/${comment.owner._id}`}>
+            {user}
+          </MUILink>
+        }
         subheader={date}
       />
       <CardContent>
@@ -231,11 +258,11 @@ function AnswerInQuestionCard(props) {
           </IconButton>
         </Tooltip>
 
-        <Tooltip title="Share">
+        {/* <Tooltip title="Share">
           <IconButton aria-label="share">
             <ShareIcon />
           </IconButton>
-        </Tooltip>
+        </Tooltip> */}
         <Tooltip title="More">
           <IconButton aria-label="more" onClick={onClick}>
             <MoreVert />

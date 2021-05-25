@@ -55,7 +55,10 @@ export default function SearchQuestion(props) {
                 to={`/question/${val._id}`}
                 onClick={dismiss}
               >
-                <Typography>{val.question}</Typography>
+                <div>
+                  <Typography>{val.question}</Typography>
+                  <Typography>Số câu trả lời: {val.commentCount}</Typography>
+                </div>
               </MenuItem>
             ))}
           </MenuList>

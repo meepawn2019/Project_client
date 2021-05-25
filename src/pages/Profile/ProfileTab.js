@@ -31,13 +31,14 @@ const useStyles = makeStyles((theme) => ({
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
-
+var tabList = ["questions", "info"];
 export default function ProfileTab(props) {
   const classes = useStyles();
   const url = useRouteMatch().url;
   const query = props.initTab;
 
-  let index = query ? 1 : 0;
+  let index = tabList.findIndex((val) => val == query) + 1;
+  // let index = query ? 1 : 0;
   const [value, setValue] = React.useState(index);
 
   const handleChange = (event, newValue) => {
@@ -64,19 +65,19 @@ export default function ProfileTab(props) {
           />
           <Tab
             className={classes.tab}
-            label="Chủ đề"
+            label="Thông tin cá nhân"
             {...a11yProps(2)}
-            // component={Link}
-            // to={`${url}?tab=topics`}
+            component={Link}
+            to={`${url}?tab=info`}
           />
 
-          <Tab
+          {/* <Tab
             className={classes.tab}
             label="Bạn bè"
             {...a11yProps(3)}
             // component={Link}
             // to={`${url}?tab=friends`}
-          />
+          /> */}
         </Tabs>
       </AppBar>
     </div>

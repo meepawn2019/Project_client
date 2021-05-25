@@ -59,6 +59,111 @@ export default function userInfoReducer(state = initStore, action) {
         },
       };
 
+    case "LIKE_AN_USER_ANSWER": {
+      let userId = content.userId;
+      let answerId = content.answerId;
+
+      let newAnswerList = [...state[id].answer?.content];
+
+      let answerIndex = newAnswerList.findIndex((a) => a._id == answerId);
+      let answer = { ...newAnswerList[answerIndex] };
+
+      let like = [...answer.like];
+      let dislike = [...answer.dislike];
+
+      let likeCount = answer.likeCount || 0;
+      let dislikeCount = answer.dislikeCount || 0;
+      let likeIndex = like.findIndex((id) => id == userId);
+      let dislikeIndex = dislike.findIndex((id) => id == userId);
+
+      if (likeIndex >= 0) {
+        like.splice(likeIndex, 1);
+        likeCount--;
+      } else if (dislikeIndex >= 0) {
+        dislike.splice(dislikeIndex, 1);
+        like.push(userId);
+        likeCount++;
+        dislikeCount--;
+      } else {
+        like.push(userId);
+        likeCount++;
+      }
+
+      let res = {
+        ...answer,
+        like: like,
+        dislike: dislike,
+        likeCount: likeCount,
+        dislikeCount: dislikeCount,
+      };
+
+      newAnswerList[answerIndex] = res;
+
+      // console.log(newAnswerList);
+
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          answer: {
+            ...state[id].answer,
+            content: newAnswerList,
+          },
+        },
+      };
+    }
+
+    case "DISLIKE_AN_USER_ANSWER": {
+      let userId = content.userId;
+      let answerId = content.answerId;
+
+      let newAnswerList = [...state[id].answer?.content];
+
+      let answerIndex = newAnswerList.findIndex((a) => a._id == answerId);
+      let answer = { ...newAnswerList[answerIndex] };
+
+      let like = [...answer.like];
+      let dislike = [...answer.dislike];
+
+      let likeCount = answer.likeCount || 0;
+      let dislikeCount = answer.dislikeCount || 0;
+      let likeIndex = like.findIndex((id) => id == userId);
+      let dislikeIndex = dislike.findIndex((id) => id == userId);
+
+      if (dislikeIndex >= 0) {
+        dislike.splice(dislikeIndex, 1);
+        dislikeCount--;
+      } else if (likeIndex >= 0) {
+        like.splice(likeIndex, 1);
+        dislike.push(userId);
+        likeCount--;
+        dislikeCount++;
+      } else {
+        dislike.push(userId);
+        dislikeCount++;
+      }
+
+      let res = {
+        ...answer,
+        like: like,
+        dislike: dislike,
+        likeCount: likeCount,
+        dislikeCount: dislikeCount,
+      };
+
+      newAnswerList[answerIndex] = res;
+
+      // console.log(newAnswerList);
+
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          answer: { ...state[id].answer, content: newAnswerList },
+        },
+      };
+    }
+
     case "LOAD_AN_USER_QUESTION":
       // console.log(action.payload.total);
       return {

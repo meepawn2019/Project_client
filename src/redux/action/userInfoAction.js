@@ -29,6 +29,25 @@ export function addAnUserAnswer(data) {
     },
   };
 }
+export function likeAnUserAnswer(data) {
+  return {
+    type: "LIKE_AN_USER_ANSWER",
+    payload: {
+      id: data.id,
+      content: data.content,
+    },
+  };
+}
+
+export function dislikeAnUserAnswer(data) {
+  return {
+    type: "DISLIKE_AN_USER_ANSWER",
+    payload: {
+      id: data.id,
+      content: data.content,
+    },
+  };
+}
 export function deleteAnUserAnswer(data) {
   return {
     type: "DELETE_AN_USER_ANSWER",

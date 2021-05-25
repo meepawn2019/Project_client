@@ -9,6 +9,7 @@ import Alert from "@material-ui/lab/Alert";
 
 import SimpleTabs from "./ProfileTab";
 import Questions from "./Questions";
+import PersonalInfo from "./PersonalInfo";
 import ImageCrop from "../../components/ImageCrop";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -80,6 +81,7 @@ const useStyles = makeStyles((theme) => ({
 
   temp: {
     marginTop: "20px",
+    flexGrow: 1,
   },
 }));
 
@@ -317,7 +319,7 @@ function Profile(props) {
           </div>
 
           <Typography className={classes.userName} align="center">
-            {user.userName || "Null"}
+            {user?.userName || "Null"}
           </Typography>
 
           <SimpleTabs initTab={tab} />
@@ -332,6 +334,7 @@ function Profile(props) {
               answer={answer?.content || []}
               loadingAnswer={!Boolean(answer)}
               loadingQuestion={!Boolean(question)}
+              loadingUser={loadingUser}
             />
           </div>
         </div>
@@ -348,6 +351,7 @@ const Temp = (props) => {
     answer,
     loadingAnswer,
     loadingQuestion,
+    loadingUser,
   } = props;
   let userInfo = user;
   const tab = useQuery().get("tab");
@@ -363,6 +367,8 @@ const Temp = (props) => {
       ) : (
         <CircularProgress />
       );
+    case "info":
+      return !loadingUser ? <PersonalInfo user={user} /> : <CircularProgress />;
 
     default:
       return loadingAnswer ? (

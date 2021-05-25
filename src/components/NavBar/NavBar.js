@@ -157,7 +157,6 @@ function NavBar(props) {
     props.clearAllHomeQuestion();
     props.clearAllQuestionAnswer();
     props.clearAllUserInfo();
-    console.log(props.data);
   };
 
   const handleProfileMenuOpen = (event) => {
@@ -198,6 +197,9 @@ function NavBar(props) {
 
       <MenuItem onClick={handleMenuClose} component={Link} to="/setting">
         Cài đặt
+      </MenuItem>
+      <MenuItem onClick={handleMenuClose} component={Link} to="/changePassword">
+        Đổi mật khẩu
       </MenuItem>
       <MenuItem component={Link} to="/" onClick={logOut}>
         Đăng xuất
@@ -250,7 +252,6 @@ function NavBar(props) {
       axios(`/findQuestionByKey/${key}`).then((data) => {
         setSearchList(data.data);
         setLoadingSearch(false);
-        console.log(data.data);
       });
     } else {
       setSearchList([]);
@@ -264,16 +265,16 @@ function NavBar(props) {
     setSearchShow(false);
   };
 
-  const clickListener = (event) => {
-    // console.log(event.target);
-  };
-  useEffect(() => {
-    window.addEventListener("click", clickListener);
+  // const clickListener = (event) => {
+  //   // console.log(event.target);
+  // };
+  // useEffect(() => {
+  //   window.addEventListener("click", clickListener);
 
-    return () => {
-      window.removeEventListener("click", clickListener);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("click", clickListener);
+  //   };
+  // }, []);
 
   return (
     <div className={classes.grow}>

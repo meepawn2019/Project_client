@@ -1,14 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Button,
   FormControl,
-  InputLabel,
-  Input,
-  FormControlLabel,
-  Checkbox,
   DialogContent,
   TextField,
 } from "@material-ui/core";
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/client";
+import AuthContext from "../../appContext";
+import store from "../../store";
+import userAction from "../../action/user";
+
+const LOGIN_MUTATION = gql`
+  mutation LoginMutation($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      user {
+        email
+        userName
+        role
+      }
+      token
+    }
+  }
+`;
+const REGISTER_MUTATION = gql`
+  mutation RegisterMutation(
+    $userName: String!
+    $email: String!
+    $password: String!
+  ) {
+    register(userName: $userName, email: $email, password: $password) {
+      userName
+      password
+    }
+  }
+`;
 
 export default function LoginModal(props) {
   const {
@@ -18,16 +44,16 @@ export default function LoginModal(props) {
     modalType,
   } = props;
 
+  const { userInformation, setUserInformation } = useContext(AuthContext);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repassword, setRePassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState({});
-  const [formData, setFormData] = useState({
-    email,
-    password,
-    name,
-  });
+  const [login] = useMutation(LOGIN_MUTATION);
+
+  const [register] = useMutation(REGISTER_MUTATION);
 
   const validate = () => {
     let temp = {};
@@ -39,9 +65,9 @@ export default function LoginModal(props) {
         : "This field is required";
     if (modalType === "register") {
       temp.name = name.length > 0 ? "" : "This field is required";
+      temp.repassword = password === repassword ? "" : "Not match password";
     }
     temp.password = password.length > 0 ? "" : "This field is required";
-    temp.repassword = password === repassword ? "" : "Not match password";
     setError({ ...temp });
     return Object.values(temp).every((x) => x === "");
   };
@@ -64,7 +90,33 @@ export default function LoginModal(props) {
   const handleSubmitForm = (e) => {
     e.preventDefault();
     if (validate()) {
-      console.log("1");
+      if (modalType === "register") {
+        register({ variables: { userName: name, email, password } });
+      } else if (modalType === "login") {
+        login({ variables: { email, password } })
+          .then((res) => {
+            console.log(res.data);
+            // setUserInformation(res.data.user);
+            localStorage.setItem("token", res.data.login.token);
+            store.dispatch(userAction.login(res.data.login.user));
+            window.location.reload();
+          })
+          .catch((err) => {
+            if (
+              err.message === "No such user found" ||
+              err.message === "Invalid password"
+            ) {
+              setError({
+                email: "Sai tai khoan hoac mat khau",
+                password: "Sai tai khoan hoac mat khau",
+              });
+            } else if (err.message === "Banned Account") {
+              setError({
+                email: "Tai khoan cua ban da bi khoa",
+              });
+            }
+          });
+      }
     }
     console.log(error);
   };
@@ -85,7 +137,7 @@ export default function LoginModal(props) {
   return (
     <div>
       <DialogContent dividers>
-        <form onSubmit={handleSubmitForm}>
+        <form>
           <FormControl fullWidth={true} className="mb-4">
             <TextField
               id="my-email"
@@ -190,6 +242,7 @@ export default function LoginModal(props) {
               color="primary"
               type="submit"
               className="mb-3 float-right"
+              onClick={handleSubmitForm}
             >
               {modalType === "login" && `Đăng nhập`}
               {modalType === "register" && "Đăng ký"}

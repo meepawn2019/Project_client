@@ -8,7 +8,7 @@ import { Provider } from "react-redux";
 import { createStore } from "redux";
 import rootReducer from "./redux/store";
 
-axios.defaults.baseURL = "http://localhost:3001/";
+axios.defaults.baseURL = "http://localhost:3002/";
 
 async function main() {
   const token = localStorage.getItem("token");

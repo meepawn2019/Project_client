@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     // backgroundColor: "red",
   },
   autocomplete: {
-    width: "90%",
+    width: "100%",
   },
   buttons: {
     width: "30vw",
@@ -108,7 +108,6 @@ function Setting(props) {
   };
   const onGenderChange = (event, val) => {
     setNewGender(val);
-    console.log(val);
   };
 
   const cancel = () => {

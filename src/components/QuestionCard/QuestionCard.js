@@ -32,9 +32,15 @@ const useStyles = makeStyles((theme) => ({
     width: "90vw",
     borderRadius: 20,
     marginBottom: 15,
+    position: "relative",
     [theme.breakpoints.up(900)]: {
       width: 810,
     },
+  },
+  topic: {
+    position: "absolute",
+    right: 20,
+    top: 30,
   },
   avatar: {
     backgroundColor: "black[500]",
@@ -137,6 +143,7 @@ function QuestionCard(props) {
   );
   return (
     <Card className={classes.root}>
+      <div className={classes.topic}>{question.topic[0]}</div>
       {currentUser._id === question.owner._id ? ownerMenu : notOwnerMenu}
       <CardHeader
         avatar={

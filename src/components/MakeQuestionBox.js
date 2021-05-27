@@ -16,11 +16,11 @@ import { connect } from "react-redux";
 import { addHomeQuestion } from "../redux/action/homeQuestionAction";
 import axios from "axios";
 
-const topics = [{ title: "Lập trình" }, { title: "Khác" }];
+const topics = ["Lập trình", "Khác"];
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    width: "50vw",
     padding: 20,
     borderRadius: 20,
     marginBottom: 15,
@@ -98,8 +98,8 @@ function MakeQuestionBox(props) {
     setQuestion(event.target.value);
   }
 
-  function onTopicChange(_, value, reason, cc) {
-    setTopic(value?.title || "Lập trình");
+  function onTopicChange(_, value) {
+    setTopic(value || "Lập trình");
   }
 
   function onSubmit() {
@@ -152,10 +152,10 @@ function MakeQuestionBox(props) {
           <div className={classes.autocomplete}>
             <Autocomplete
               disabled={creating}
-              defaultValue={topics[0]}
-              value={topics[0]}
+              defaultValue={topic}
+              value={topic}
               options={topics}
-              getOptionLabel={(option) => option.title}
+              getOptionLabel={(option) => option}
               onChange={onTopicChange}
               renderInput={(params) => (
                 <TextField
@@ -163,7 +163,6 @@ function MakeQuestionBox(props) {
                   required
                   label="Chủ đề"
                   variant="outlined"
-                  // value={topics[1].title}
                 />
               )}
             />

@@ -294,6 +294,7 @@ function NavBar(props) {
               <InputBase
                 placeholder="Search…"
                 className={classes.searchInput}
+                fullWidth
                 classes={{
                   root: classes.inputRoot,
                   input: classes.inputInput,

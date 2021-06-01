@@ -174,6 +174,8 @@ function AuthPage(props) {
           case "Email is not verified":
             setErrorText("Vui lòng xác thực email");
             break;
+          case "Banned user":
+            setErrorText("Người dùng đã bị cấm đăng nhập");
           default:
             setErrorText("Sai thông tin đăng nhập hoặc chưa đăng ký");
             break;

@@ -176,6 +176,7 @@ function AuthPage(props) {
             break;
           case "Banned user":
             setErrorText("Người dùng đã bị cấm đăng nhập");
+            break;
           default:
             setErrorText("Sai thông tin đăng nhập hoặc chưa đăng ký");
             break;

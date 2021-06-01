@@ -113,8 +113,6 @@ const useStyles = makeStyles({
   },
 });
 
-function QuestionModal(props) {
-  const handleClose = props.handleModalClose;
 
 const POST_QUESTION = gql`
   mutation($question: String!, $owner: ID!) {
@@ -125,7 +123,6 @@ const POST_QUESTION = gql`
         userName
       }
     }`
-  }
 ;
 
 export default function QuestionModal(props) {

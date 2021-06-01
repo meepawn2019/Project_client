@@ -8,8 +8,6 @@ import {
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/client";
 import AuthContext from "../../appContext";
-import store from "../../store";
-import userAction from "../../action/user";
 
 const LOGIN_MUTATION = gql`
   mutation LoginMutation($email: String!, $password: String!) {
@@ -89,36 +87,36 @@ export default function LoginModal(props) {
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
-    if (validate()) {
-      if (modalType === "register") {
-        register({ variables: { userName: name, email, password } });
-      } else if (modalType === "login") {
-        login({ variables: { email, password } })
-          .then((res) => {
-            console.log(res.data);
-            // setUserInformation(res.data.user);
-            localStorage.setItem("token", res.data.login.token);
-            store.dispatch(userAction.login(res.data.login.user));
-            window.location.reload();
-          })
-          .catch((err) => {
-            if (
-              err.message === "No such user found" ||
-              err.message === "Invalid password"
-            ) {
-              setError({
-                email: "Sai tai khoan hoac mat khau",
-                password: "Sai tai khoan hoac mat khau",
-              });
-            } else if (err.message === "Banned Account") {
-              setError({
-                email: "Tai khoan cua ban da bi khoa",
-              });
-            }
-          });
-      }
-    }
-    console.log(error);
+    // if (validate()) {
+    //   if (modalType === "register") {
+    //     register({ variables: { userName: name, email, password } });
+    //   } else if (modalType === "login") {
+    //     login({ variables: { email, password } })
+    //       .then((res) => {
+    //         console.log(res.data);
+    //         // setUserInformation(res.data.user);
+    //         localStorage.setItem("token", res.data.login.token);
+    //         store.dispatch(userAction.login(res.data.login.user));
+    //         window.location.reload();
+    //       })
+    //       .catch((err) => {
+    //         if (
+    //           err.message === "No such user found" ||
+    //           err.message === "Invalid password"
+    //         ) {
+    //           setError({
+    //             email: "Sai tai khoan hoac mat khau",
+    //             password: "Sai tai khoan hoac mat khau",
+    //           });
+    //         } else if (err.message === "Banned Account") {
+    //           setError({
+    //             email: "Tai khoan cua ban da bi khoa",
+    //           });
+    //         }
+    //       });
+    //   }
+    // }
+    // console.log(error);
   };
 
   const handleEmailChange = (v) => {

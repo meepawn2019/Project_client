@@ -4,7 +4,6 @@ import CustomTable from "../../../components/CustomTable/CustomTable";
 import { useQuery, gql, useMutation } from "@apollo/client";
 import LoadingDialog from "../../../components/Modal/LoadingDialog";
 import MainDialog from "../../../components/Modal/MainDialog";
-import { coerceInputValue } from "graphql";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -37,29 +36,9 @@ const AppQuery = gql`
 const ADMIN_QUERY = gql`
   query {
     admin {
-      id
       userName
       email
       gender
-      createAt
-    }
-  }
-`;
-
-const REPORT_USER_QUERY = gql`
-  query {
-    reportUser {
-      id
-      sender {
-        id
-        userName
-      }
-      reportUser {
-        id
-        userName
-      }
-      content
-      status
       createAt
     }
   }
@@ -75,15 +54,6 @@ const BAN_MUTATION = gql`
   }
 `;
 
-const REPORT_MUTATION = gql`
-  mutation ReportUserHandleMutation($id: ID!, $status: String!) {
-    updateReportUserMutation(id: $id, status: $status) {
-      id
-      status
-    }
-  }
-`;
-
 const DELETE_ADMIN_MUTATION = gql`
   mutation DeleteRoleAdmin($email: String!) {
     deleteRoleAdmin(email: $email) {
@@ -95,7 +65,7 @@ const DELETE_ADMIN_MUTATION = gql`
 const ADD_ADMIN_MUTATION = gql`
   mutation AddAdmin($users: [UserInput]) {
     addAdmin(users: $users) {
-      id
+      _id
     }
   }
 `;
@@ -267,37 +237,27 @@ const headReportCell = [
 export default function User(props) {
   const { loading, error, data, refetch } = useQuery(AppQuery);
   const {
-    loading: reportLoading,
-    error: reportError,
-    data: reportData,
-  } = useQuery(REPORT_USER_QUERY);
-  const {
     loading: adminLoading,
-    error: admninError,
+    error: adminError,
     data: adminData,
     refetch: adminRefetch,
   } = useQuery(ADMIN_QUERY);
   const [report, setReport] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  useEffect(() => {
-    if (!reportLoading) {
-      setReport(reportData.reportUser);
-    }
-  }, [reportData, reportLoading]);
+  const [err, setErr] = useState({});
 
   const [banUser] = useMutation(BAN_MUTATION);
-  const [updateReport] = useMutation(REPORT_MUTATION);
   const [deleteRoleAdmin] = useMutation(DELETE_ADMIN_MUTATION);
   const [addAdmin] = useMutation(ADD_ADMIN_MUTATION);
   const classes = useStyles();
-  useEffect(() => {}, [loading, reportLoading, adminLoading]);
+  useEffect(() => {}, [loading, adminLoading]);
 
-  if (loading || reportLoading || adminLoading) {
-    return <LoadingDialog show={loading} />;
+  if (loading || adminLoading) {
+    return <LoadingDialog show={loading} type={"loading"} />;
   }
-  if (error) {
-    // console.log(error);
+  if (error || adminError) {
+    console.log("Error", { error });
+    console.log("Error Admin", { adminError });
     // return <p>Error...</p>;
   }
 
@@ -322,24 +282,6 @@ export default function User(props) {
         console.log("Error", { err });
       });
     console.log(data);
-  };
-
-  const handleSelectReportStatus = (selectedValue, data) => {
-    console.log(data.id);
-    updateReport({ variables: { id: data.id, status: selectedValue } })
-      .then((res) => {
-        const isSelected = (element) => element.id === data.id;
-        const selectedIndex = report.findIndex(isSelected);
-        let newReport = [...report];
-        newReport[selectedIndex] = {
-          ...newReport[selectedIndex],
-          status: selectedValue,
-        };
-        setReport(newReport);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   const handleAddClick = () => {
@@ -374,12 +316,6 @@ export default function User(props) {
         data={data.user}
         handleBanClick={handleBanClick}
         title="Người dùng"
-      />
-      <CustomTable
-        columns={headReportCell}
-        data={report}
-        title="Báo cáo vi phạm"
-        handleSelectChange={handleSelectReportStatus}
       />
       <CustomTable
         columns={headAdminCells}

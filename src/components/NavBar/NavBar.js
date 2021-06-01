@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -138,6 +138,8 @@ function NavBar(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [show, setShow] = useState(false);
+  const location = useLocation();
+  console.log(location.pathname);
 
   const handleClose = () => {
     setShow(false);
@@ -271,6 +273,10 @@ function NavBar(props) {
   //     window.removeEventListener("click", clickListener);
   //   };
   // }, []);
+
+  if (location.pathname.includes("admin")) {
+    return null;
+  }
 
   return (
     <div className={classes.grow}>

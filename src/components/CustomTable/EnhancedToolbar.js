@@ -85,6 +85,7 @@ export default function EnhancedToolbar(props) {
           searchData={data}
           searchField={columns.find((el) => el.searchKey).id}
           handleSearch={handleSearch}
+          key={title}
         />
       )}
       {numSelected > 0 ? (

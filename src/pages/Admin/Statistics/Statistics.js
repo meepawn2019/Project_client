@@ -171,7 +171,7 @@ export default function Statistics(props) {
   };
 
   if (loading || questionLoading) {
-    return <LoadingDialog show={loading} />;
+    return <LoadingDialog show={loading} type={"loading"} />;
   }
   return (
     <div className={classes.container}>

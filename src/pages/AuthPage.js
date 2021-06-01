@@ -11,6 +11,8 @@ import makeStyle from "@material-ui/styles/makeStyles";
 import axios from "axios";
 import { loadCurrentUser } from "../redux/action/currentUserAction";
 import { connect } from "react-redux";
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/client";
 
 const re =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -32,6 +34,19 @@ const useStyles = makeStyle((theme) => ({
   },
 }));
 
+const LOGIN_MUTATION = gql`
+  mutation LoginMutation($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      user {
+        email
+        userName
+        role
+      }
+      token
+    }
+  }
+`;
+
 function AuthPage(props) {
   const loadUser = props.loadCurrentUser;
   const classes = useStyles();
@@ -45,6 +60,7 @@ function AuthPage(props) {
   const [rePass, setRePass] = useState("");
   const [name, setName] = useState("");
   const [disable, setDisable] = useState(false);
+  const [loginGraph] = useMutation(LOGIN_MUTATION);
 
   const handleRegisterClick = () => {
     setError(false);
@@ -164,6 +180,14 @@ function AuthPage(props) {
         }
 
         //
+      });
+    loginGraph({ variables: { email, password } })
+      .then((res) => {
+        console.log(res.data);
+        localStorage.setItem("tokenAuth", res.data.login.token);
+      })
+      .catch((err) => {
+        console.log("err", { err });
       });
   };
 

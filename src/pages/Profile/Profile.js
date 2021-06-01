@@ -8,7 +8,7 @@ import SnackBar from "@material-ui/core/SnackBar";
 import Alert from "@material-ui/lab/Alert";
 
 import SimpleTabs from "./ProfileTab";
-import Questions from "./Questions";
+import Questions from "./questions";
 import PersonalInfo from "./PersonalInfo";
 import ImageCrop from "../../components/ImageCrop";
 import axios from "axios";

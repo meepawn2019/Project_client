@@ -10,6 +10,8 @@ import {
 } from "../../redux/action/homeQuestionAction";
 import { Link, useLocation } from "react-router-dom";
 import { Tab, Tabs } from "@material-ui/core";
+import NavBar from "../../components/NavBar/NavBar";
+
 const useStyles = makeStyles((theme) => ({
   home: {
     backgroundColor: "rgb(243, 243, 240)",

@@ -4,6 +4,7 @@ import AuthPage from "./pages/AuthPage";
 import { connect } from "react-redux";
 import Home from "./pages/Home/Home";
 import Profile from "./pages/Profile/Profile";
+import Admin from "./container/components/Admin";
 
 import Setting from "./pages/Setting";
 import Question from "./pages/Question/Question";
@@ -24,6 +25,7 @@ function App(props) {
 
         <Route path="/changepassword" component={ChangePassword}></Route>
         <Route path="/question/:id" component={Question}></Route>
+        <Route path="/admin" component={Admin}></Route>
         {/* <Route path="/soso2" component={ImageCrop}></Route> */}
       </Switch>
     </Router>

@@ -24,7 +24,7 @@ const AppQuery = gql`
   query {
     question {
       owner {
-        id
+        _id
         userName
       }
       id
@@ -39,7 +39,7 @@ const REPORT_QUESTION_QUERY = gql`
     questionReport {
       id
       sender {
-        id
+        _id
         userName
       }
       reportQuestion {
@@ -87,7 +87,7 @@ const headQuestionCell = [
     label: "Người hỏi",
     type: "link",
     display: "userName",
-    value: "id",
+    value: "_id",
     linkTo: "profile",
   },
   {
@@ -183,33 +183,15 @@ export default function Question(props) {
 
   useEffect(() => {
     console.log("Error", { reportError });
-  }, [reportData, reportError]);
+  }, [error, reportError]);
 
   if (loading || reportLoading) {
-    return <LoadingDialog show={loading} />;
+    return <LoadingDialog show={loading} type={"loading"} />;
   }
   if (error || reportError) {
     // console.log(error);
     // return <p>Error...</p>;
   }
-
-  const handleSelectReportStatus = (selectedValue, data) => {
-    console.log(data.id);
-    updateReport({ variables: { id: data.id, status: selectedValue } })
-      .then((res) => {
-        const isSelected = (element) => element.id === data.id;
-        const selectedIndex = report.findIndex(isSelected);
-        let newReport = [...report];
-        newReport[selectedIndex] = {
-          ...newReport[selectedIndex],
-          status: selectedValue,
-        };
-        setReport(newReport);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
 
   return (
     <div className={classes.container}>

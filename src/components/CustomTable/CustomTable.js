@@ -75,7 +75,6 @@ export default function CustomTable(props) {
       if (type === "link") {
         setSearchData(
           data.filter((element) => {
-            console.log(element[searchKey]);
             return element[searchKey].toLowerCase().includes(searchText);
           })
         );
@@ -312,7 +311,6 @@ export default function CustomTable(props) {
                           if (column.type === "link") {
                             let display;
                             let value;
-                            console.log(row);
                             if (newEl[column.display]) {
                               display = newEl[column.display];
                             } else {

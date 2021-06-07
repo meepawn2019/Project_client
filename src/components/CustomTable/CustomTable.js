@@ -52,7 +52,8 @@ function formatDate(date) {
 }
 
 export default function CustomTable(props) {
-  const { columns, data, title, handleAddClick, ...rest } = props;
+  const { columns, data, title, handleAddClick, userInformation, ...rest } =
+    props;
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -222,12 +223,14 @@ export default function CustomTable(props) {
   };
 
   const DeleteButtonRender = (label, data, value) => {
+    const disabled = data.email === userInformation.email;
     return (
       <TableCell align="left" key={value}>
         <Button
           color="primary"
           variant="contained"
           onClick={(event) => handleDeleteClick(event, data)}
+          disabled={disabled}
         >
           {label}
         </Button>

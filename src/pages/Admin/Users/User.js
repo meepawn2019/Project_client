@@ -24,10 +24,12 @@ const useStyles = makeStyles((theme) => ({
 const AppQuery = gql`
   query {
     user {
+      _id
       userName
       email
       gender
       createAt
+      birth
       banStatus
     }
   }
@@ -36,8 +38,10 @@ const AppQuery = gql`
 const ADMIN_QUERY = gql`
   query {
     admin {
+      _id
       userName
       email
+      birth
       gender
       createAt
     }
@@ -71,14 +75,19 @@ const ADD_ADMIN_MUTATION = gql`
 
 const headUserCells = [
   {
+    id: "_id",
+    field: "_id",
+    numberic: false,
+    hidden: true,
+    mainKey: true,
+  },
+  {
     id: "userName",
     field: "userName",
     numeric: false,
     disablePadding: true,
     label: "User name",
     isTh: true,
-    searchKey: true,
-    mainKey: true,
   },
   {
     id: "email",
@@ -87,6 +96,7 @@ const headUserCells = [
     disablePadding: false,
     label: "Email",
     isTh: true,
+    searchKey: true,
   },
   {
     id: "gender",
@@ -123,8 +133,8 @@ const headUserCells = [
 
 const headAdminCells = [
   {
-    id: "id",
-    field: "id",
+    id: "_id",
+    field: "_id",
     numberic: false,
     hidden: true,
     mainKey: true,
@@ -136,8 +146,6 @@ const headAdminCells = [
     disablePadding: true,
     label: "User name",
     isTh: true,
-    searchKey: true,
-    mainKey: true,
   },
   {
     id: "email",
@@ -146,6 +154,7 @@ const headAdminCells = [
     disablePadding: false,
     label: "Email",
     isTh: true,
+    searchKey: true,
   },
   {
     id: "gender",
@@ -249,7 +258,6 @@ export default function User(props) {
   const [deleteRoleAdmin] = useMutation(DELETE_ADMIN_MUTATION);
   const [addAdmin] = useMutation(ADD_ADMIN_MUTATION);
   const classes = useStyles();
-  useEffect(() => {}, [loading, adminLoading]);
 
   if (loading || adminLoading) {
     return <LoadingDialog show={loading} type={"loading"} />;
@@ -296,6 +304,7 @@ export default function User(props) {
       .catch((err) => {
         console.log("Error", { err });
       });
+    handleCloseDialog();
   };
 
   const handleCloseDialog = () => {

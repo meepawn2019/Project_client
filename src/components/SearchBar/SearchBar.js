@@ -21,7 +21,6 @@ function SearchBar(props) {
     <div style={{ width: 300 }}>
       <Autocomplete
         {...defaultProps}
-        id="debug"
         onChange={handleOnChangeAuto}
         clearOnBlur={false}
         disableClearable

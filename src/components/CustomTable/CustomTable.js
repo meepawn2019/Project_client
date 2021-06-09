@@ -40,15 +40,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function formatDate(date) {
-  var d = new Date(date),
-    month = "" + (d.getMonth() + 1),
-    day = "" + d.getDate(),
-    year = d.getFullYear();
+  if (date) {
+    var d = new Date(date),
+      month = "" + (d.getMonth() + 1),
+      day = "" + d.getDate(),
+      year = d.getFullYear();
 
-  if (month.length < 2) month = "0" + month;
-  if (day.length < 2) day = "0" + day;
+    if (month.length < 2) month = "0" + month;
+    if (day.length < 2) day = "0" + day;
 
-  return [year, month, day].join("-");
+    return [year, month, day].join("-");
+  }
+  return null;
 }
 
 export default function CustomTable(props) {
@@ -225,7 +228,7 @@ export default function CustomTable(props) {
   const DeleteButtonRender = (label, data, value) => {
     const disabled = data.email === userInformation.email;
     return (
-      <TableCell align="left" key={value}>
+      <TableCell align="left" key={data.email}>
         <Button
           color="primary"
           variant="contained"
@@ -275,7 +278,6 @@ export default function CustomTable(props) {
                 .map((row, index) => {
                   const isItemSelected = isSelected(row[columns[0]["id"]]);
                   const labelId = `enhanced-table-checkbox-${index}`;
-
                   return (
                     <TableRow
                       hover
@@ -285,11 +287,10 @@ export default function CustomTable(props) {
                           row[columns.find((el) => el.mainKey).id]
                         )
                       }
-                      role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={index}
                       selected={isItemSelected}
+                      key={row[columns.find((el) => el.mainKey).id]}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox

@@ -53,6 +53,14 @@ const AppQuery = gql`
   }
 `;
 
+const ADMIN_QUERY = gql`
+  query {
+    admin {
+      createAt
+    }
+  }
+`;
+
 const QUESTION_QUERY = gql`
   query {
     question {
@@ -83,6 +91,12 @@ export default function Statistics(props) {
     data: answerData,
     refetch: refecthAnswer,
   } = useQuery(ANSWER_QUERY);
+  const {
+    loading: adminLoading,
+    error: adminError,
+    data: adminData,
+    refetch: adminRefetch,
+  } = useQuery(ADMIN_QUERY);
   const [users, setUsers] = useState(0);
   const [newUsers, setNewUsers] = useState(0);
   const [bannedUsers, setBannedUsers] = useState(0);
@@ -95,12 +109,12 @@ export default function Statistics(props) {
   const classes = useStyles();
 
   useEffect(() => {
-    if (!loading && !questionLoading && !answerLoading) {
+    if (!loading && !questionLoading && !answerLoading && !adminLoading) {
       console.log(data.user.length);
       console.log(answerData.comments.length);
       console.log(questionData.question.length);
 
-      setUsers(data.user.length);
+      setUsers(data.user.length + adminData.admin.length);
       setNewUsers(
         data.user.filter(
           (el) =>

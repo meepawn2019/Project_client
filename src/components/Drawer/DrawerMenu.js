@@ -106,7 +106,7 @@ export default function DrawerMenu(props) {
           <ListItemIcon>
             <KeyboardReturnIcon />
           </ListItemIcon>
-          <ListItemText primary={"Trờ về ứng dụng"} />
+          <ListItemText primary={"Giao diện người dùng"} />
         </ListItem>
       </List>
     </div>

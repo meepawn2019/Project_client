@@ -9,7 +9,7 @@ import makeStyles from "@material-ui/styles/makeStyles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    maxWidth: 600,
+    // maxWidth: 600,
     padding: 10,
   },
   submitButton: {
@@ -61,11 +61,11 @@ function ImageCrop(props) {
   const onImageLoaded = (image) => {};
 
   const onCropChange = (crop, percentCrop) => {
-    setCrop(crop);
+    setCrop(percentCrop);
   };
 
-  const onCropComplete = (crop) => {
-    // console.log(crop);
+  const onCropComplete = (crop, percentCrop) => {
+    // console.log(percentCrop);
   };
 
   const onSubmit = () => {
@@ -86,7 +86,7 @@ function ImageCrop(props) {
         onClose();
       })
       .catch((e) => {
-        getError(e);
+        getError(e.response.data.error);
         setIsChanging(false);
       });
   };

@@ -151,10 +151,7 @@ function QuestionCard(props) {
             <Avatar
               aria-label="recipe"
               className={classes.avatar}
-              src={
-                question.owner.avatar ||
-                "https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1"
-              }
+              src={question.owner.avatar || "../customer_avatar.png"}
             />
           </MUILink>
         }

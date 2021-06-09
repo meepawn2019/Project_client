@@ -96,7 +96,6 @@ export default function Statistics(props) {
 
   useEffect(() => {
     if (!loading && !questionLoading && !answerLoading) {
-      console.log(1);
       setUsers(data.user.length);
       setNewUsers(
         data.user.filter(
@@ -123,16 +122,18 @@ export default function Statistics(props) {
         ).length
       );
     }
-  }, [loading, questionLoading]);
+  }, [loading, questionLoading, answerLoading]);
 
   const handleDayClick = () => {
     setTimeRange("Day");
     setNewUsers(
-      data.user.filter(
-        (el) =>
-          new Date(el.createAt).toJSON().slice(0, 10).replace(/-/g, "/") ===
-          new Date().toJSON().slice(0, 10).replace(/-/g, "/")
-      ).length
+      data
+        ? data.user.filter(
+            (el) =>
+              new Date(el.createAt).toJSON().slice(0, 10).replace(/-/g, "/") ===
+              new Date().toJSON().slice(0, 10).replace(/-/g, "/")
+          ).length
+        : 0
     );
     setNewAnswers(
       answerData.comments.filter(
@@ -153,21 +154,26 @@ export default function Statistics(props) {
   const handleMonthClick = () => {
     setTimeRange("Month");
     setNewUsers(
-      data.user.filter(
-        (el) => new Date(el.createAt).getMonth() === new Date().getMonth()
-      ).length
+      data
+        ? data.user.filter(
+            (el) => new Date(el.createAt).getMonth() === new Date().getMonth()
+          ).length
+        : 0
     );
     setNewAnswers(
-      answerData.comments.filter(
-        (el) => new Date(el.createAt).getMonth() === new Date().getMonth()
-      ).length
+      answerData
+        ? answerData.comments.filter(
+            (el) => new Date(el.createAt).getMonth() === new Date().getMonth()
+          ).length
+        : 0
     );
     setNewQuestions(
-      questionData.question.filter(
-        (el) => new Date(el.createAt).getMonth() === new Date().getMonth()
-      ).length
+      questionData
+        ? questionData.question.filter(
+            (el) => new Date(el.createAt).getMonth() === new Date().getMonth()
+          ).length
+        : 0
     );
-    console.log(newUsers);
   };
 
   if (loading || questionLoading) {

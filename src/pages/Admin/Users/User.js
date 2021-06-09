@@ -48,7 +48,6 @@ const BAN_MUTATION = gql`
   mutation BanUser($email: String!) {
     banUser(email: $email) {
       userName
-      password
       banStatus
     }
   }
@@ -307,7 +306,7 @@ export default function User(props) {
     <div className={classes.container}>
       <MainDialog
         show={dialogOpen}
-        data={data.user}
+        data={data && data.user ? data.user : null}
         handleAddAdmin={handleAddAdmin}
         handleClose={handleCloseDialog}
       ></MainDialog>

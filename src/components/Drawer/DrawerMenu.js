@@ -15,6 +15,7 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import GroupIcon from "@material-ui/icons/Group";
 import QuestionAnswerIcon from "@material-ui/icons/QuestionAnswer";
+import KeyboardReturnIcon from "@material-ui/icons/KeyboardReturn";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import HomeIcon from "@material-ui/icons/Home";
 
@@ -63,8 +64,8 @@ export default function DrawerMenu(props) {
     history.push(`${url}`);
   };
 
-  const handleStatisClick = () => {
-    history.push(`${url}/statistics`);
+  const handleReturnClick = () => {
+    history.push(`/`);
   };
 
   const handleUsersClick = () => {
@@ -100,6 +101,12 @@ export default function DrawerMenu(props) {
             <QuestionAnswerIcon />
           </ListItemIcon>
           <ListItemText primary={"Quản lý câu hỏi"} />
+        </ListItem>
+        <ListItem button onClick={handleReturnClick}>
+          <ListItemIcon>
+            <KeyboardReturnIcon />
+          </ListItemIcon>
+          <ListItemText primary={"Trờ về ứng dụng"} />
         </ListItem>
       </List>
     </div>

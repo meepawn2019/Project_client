@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import CustomTable from "../../../components/CustomTable/CustomTable";
+import CustomTable from "../../../container/components/CustomTable";
 import { useQuery, gql, useMutation } from "@apollo/client";
 import LoadingDialog from "../../../components/Modal/LoadingDialog";
 import MainDialog from "../../../components/Modal/MainDialog";

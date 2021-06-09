@@ -27,7 +27,7 @@ const AppQuery = gql`
         _id
         userName
       }
-      id
+      _id
       question
       createAt
     }
@@ -36,17 +36,17 @@ const AppQuery = gql`
 
 const REPORT_QUESTION_QUERY = gql`
   query {
-    questionReport {
-      id
-      sender {
+    reportedQuestion {
+      _id
+      reporter {
         _id
         userName
       }
-      reportQuestion {
-        id
+      reported {
+        _id
         question
       }
-      content
+      reportDetail
       status
       createAt
     }
@@ -74,8 +74,8 @@ const REPORT_QUESTION_QUERY = gql`
 
 const headQuestionCell = [
   {
-    id: "id",
-    field: "id",
+    id: "_id",
+    field: "_id",
     numberic: false,
     hidden: true,
     mainKey: true,
@@ -97,7 +97,7 @@ const headQuestionCell = [
     label: "Câu hỏi",
     type: "link",
     display: "question",
-    value: "id",
+    value: "_id",
     linkTo: "question",
     searchKey: true,
   },
@@ -111,37 +111,38 @@ const headQuestionCell = [
 
 const headReportCell = [
   {
-    id: "id",
-    field: "id",
+    id: "_id",
+    field: "_id",
     numberic: false,
     hidden: true,
     mainKey: true,
   },
   {
-    id: "sender",
-    field: "sender",
+    id: "reporter",
+    field: "reporter",
     numberic: false,
     label: "Người báo cáo",
     type: "link",
     display: "userName",
-    value: "id",
+    value: "_id",
     linkTo: "profile",
   },
   {
-    id: "reportQuestion",
-    field: "reportUser",
+    id: "reported",
+    field: "reported",
     numberic: false,
     label: "Câu hỏi vi phạm",
     type: "link",
     display: "question",
-    value: "id",
+    value: "_id",
     linkTo: "question",
   },
   {
-    id: "content",
-    field: "content",
+    id: "reportDetail",
+    field: "reportDetail",
     numberic: false,
     label: "Nội dung vi phạm",
+    array: true,
   },
   {
     id: "status",
@@ -163,7 +164,7 @@ const headReportCell = [
 const REPORT_MUTATION = gql`
   mutation ReportQuestionHandleMutation($id: ID!, $status: String!) {
     updateReportQuestionMutation(id: $id, status: $status) {
-      id
+      _id
       status
     }
   }
@@ -182,8 +183,10 @@ export default function Question(props) {
   const classes = useStyles();
 
   useEffect(() => {
-    console.log("Error", { reportError });
-  }, [error, reportError]);
+    if (!reportLoading) {
+      setReport(reportData.reportedQuestion);
+    }
+  }, [reportData, reportLoading]);
 
   if (loading || reportLoading) {
     return <LoadingDialog show={loading} type={"loading"} />;
@@ -192,6 +195,25 @@ export default function Question(props) {
     // console.log(error);
     // return <p>Error...</p>;
   }
+
+  const handleSelectReportStatus = (selectedValue, data) => {
+    console.log(data._id);
+    updateReport({ variables: { id: data._id, status: selectedValue } })
+      .then((res) => {
+        console.log(res);
+        const isSelected = (element) => element._id === data._id;
+        const selectedIndex = report.findIndex(isSelected);
+        let newReport = [...report];
+        newReport[selectedIndex] = {
+          ...newReport[selectedIndex],
+          status: selectedValue,
+        };
+        setReport(newReport);
+      })
+      .catch((err) => {
+        console.log("err", { err });
+      });
+  };
 
   return (
     <div className={classes.container}>
@@ -202,8 +224,9 @@ export default function Question(props) {
       />
       <CustomTable
         columns={headReportCell}
-        data={reportData.questionReport}
+        data={report}
         title="Báo cáo vi phạm"
+        handleSelectChange={handleSelectReportStatus}
       />
     </div>
   );

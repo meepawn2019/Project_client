@@ -96,7 +96,7 @@ function Profile(props) {
   const question = props.user[id]?.question;
   const currentUser = props.currentUser.user;
   const isOwner = currentUser?._id === id;
-  console.log(user?.coverImage||'hihihi');
+  console.log(user?.coverImage || "hihihi");
   const {
     loadAnUser,
     loadAnUserAnswer,
@@ -257,7 +257,6 @@ function Profile(props) {
   ) : (
     <div className={classes.root}>
       {
-        
         <div>
           <SnackBar
             anchorOrigin={{
@@ -294,9 +293,7 @@ function Profile(props) {
               }`}
             >
               <img
-                src={
-                  user.coverImage || "../no-cover.png"
-                }
+                src={user.coverImage || "../no-cover.png"}
                 style={{ width: "inherit", height: "inherit" }}
                 alt="cover"
               ></img>

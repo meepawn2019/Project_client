@@ -96,6 +96,10 @@ export default function Statistics(props) {
 
   useEffect(() => {
     if (!loading && !questionLoading && !answerLoading) {
+      console.log(data.user.length);
+      console.log(answerData.comments.length);
+      console.log(questionData.question.length);
+
       setUsers(data.user.length);
       setNewUsers(
         data.user.filter(
@@ -176,7 +180,7 @@ export default function Statistics(props) {
     );
   };
 
-  if (loading || questionLoading) {
+  if (loading || questionLoading || answerLoading) {
     return <LoadingDialog show={loading} type={"loading"} />;
   }
   return (

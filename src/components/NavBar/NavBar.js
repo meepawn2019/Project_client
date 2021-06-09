@@ -139,7 +139,6 @@ function NavBar(props) {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [show, setShow] = useState(false);
   const location = useLocation();
-  console.log(location.pathname);
 
   const handleClose = () => {
     setShow(false);
@@ -235,7 +234,7 @@ function NavBar(props) {
           aria-haspopup="true"
           color="inherit"
         >
-          <Avatar src={user.avatar} />
+          <Avatar src={user.avatar || "../customer_avatar.png"} />
         </IconButton>
         <Typography>Tài khoản</Typography>
       </MenuItem>
@@ -346,7 +345,7 @@ function NavBar(props) {
                   aria-haspopup="true"
                   color="inherit"
                 >
-                  <Avatar src={user.avatar} />
+                  <Avatar src={user.avatar || "../customer_avatar.png"} />
                 </IconButton>
                 <Typography>Tài khoản</Typography>
               </MenuItem>

@@ -1,10 +1,11 @@
 var initStore = {};
 export default function currentUserReducer(state = initStore, action) {
   switch (action.type) {
-    case "LOAD_CURRENT_USER":
+    case "LOAD_CURRENT_USER": {
       return {
         user: action.payload.user,
       };
+    }
 
     case "CHANGE_CURRENT_USER_AVATAR":
       return {

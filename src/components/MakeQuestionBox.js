@@ -20,12 +20,12 @@ const topics = ["Lập trình", "Khác"];
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "50vw",
+    width: 300,
     padding: 20,
     borderRadius: 20,
     marginBottom: 15,
     [theme.breakpoints.up(700)]: {
-      width: 600,
+      width: 500,
     },
   },
   userInfo: {
@@ -141,7 +141,7 @@ function MakeQuestionBox(props) {
           <div className={classes.userInfo}>
             <Avatar
               className={classes.avatar}
-              src={currentUser.avatar}
+              src={currentUser.avatar || "../customer_avatar.png"}
               alt="avatar default"
             />
             <Typography align="center" variant="h5" className={classes.a}>

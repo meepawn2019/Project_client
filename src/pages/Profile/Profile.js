@@ -8,7 +8,7 @@ import SnackBar from "@material-ui/core/SnackBar";
 import Alert from "@material-ui/lab/Alert";
 
 import SimpleTabs from "./ProfileTab";
-import Questions from "./questions";
+import Questions from "./Questions";
 import PersonalInfo from "./PersonalInfo";
 import ImageCrop from "../../components/ImageCrop";
 import axios from "axios";
@@ -96,7 +96,7 @@ function Profile(props) {
   const question = props.user[id]?.question;
   const currentUser = props.currentUser.user;
   const isOwner = currentUser?._id === id;
-
+  console.log(user?.coverImage||'hihihi');
   const {
     loadAnUser,
     loadAnUserAnswer,
@@ -210,18 +210,18 @@ function Profile(props) {
 
   const onAvatarChoose = (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      setOpenCrop(true);
       setFile(e.target.files[0]);
       setAspect(1);
       setApiUrl("/updateAvatar");
+      setOpenCrop(true);
     }
   };
   const onCoverImageChoose = (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      setOpenCrop(true);
       setFile(e.target.files[0]);
       setAspect(9 / 5);
       setApiUrl("/updateCoverImage");
+      setOpenCrop(true);
     }
   };
 
@@ -230,7 +230,6 @@ function Profile(props) {
     setSnackBar(true);
     setSnackBarType("success");
     setSnackBarText("Thay đổi thành công");
-    console.log(apiUrl);
     if (apiUrl.includes("updateAvatar")) {
       changeUserAvatar({ id: id, content: data.data.avatar });
       changeCurrentUserAvatar({ content: data.data.avatar });
@@ -243,10 +242,11 @@ function Profile(props) {
   const getError = (e) => {
     setSnackBar(true);
     setSnackBarType("warning");
-    setSnackBarText(e.response?.data || "Lỗi");
+    setSnackBarText(e?.response?.data || "Lỗi");
   };
 
   const onCloseCrop = () => {
+    setFile(null);
     setOpenCrop(false);
   };
 
@@ -257,6 +257,7 @@ function Profile(props) {
   ) : (
     <div className={classes.root}>
       {
+        
         <div>
           <SnackBar
             anchorOrigin={{
@@ -293,7 +294,9 @@ function Profile(props) {
               }`}
             >
               <img
-                src={props.user[id]?.user?.coverImage}
+                src={
+                  user.coverImage || "../no-cover.png"
+                }
                 style={{ width: "inherit", height: "inherit" }}
                 alt="cover"
               ></img>
@@ -308,7 +311,7 @@ function Profile(props) {
                 className={`${classes.avatar} ${
                   isOwner && classes.imageLoadButton
                 }`}
-                src={user?.avatar}
+                src={user?.avatar || "../customer_avatar.png"}
               />
               {isOwner && (
                 <input type="file" hidden onChange={onAvatarChoose} />

@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   avatar: {
-    backgroundColor: red[500],
+    // backgroundColor: red[500],
   },
   question: {
     fontSize: "5vw",
@@ -200,7 +200,7 @@ function AnswerInQuestionCard(props) {
             <Avatar
               aria-label="recipe"
               className={classes.avatar}
-              src={comment.owner.avatar}
+              src={comment.owner.avatar || '../customer_avatar.png'}
             />
           </MUILink>
         }

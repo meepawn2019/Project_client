@@ -5,6 +5,8 @@ import { connect } from "react-redux";
 import { Button, IconButton, TextField } from "@material-ui/core";
 import Edit from "@material-ui/icons/Edit";
 import axios from "axios";
+import SnackBar from "@material-ui/core/SnackBar";
+import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
   home: {
@@ -65,6 +67,10 @@ function Setting(props) {
   const [newGender, setNewGender] = useState(user.gender);
   const [newBirth, setNewBirth] = useState(user.birth);
 
+  const [snackBar, setSnackBar] = useState(false);
+  const [snackBarType, setSnackBarType] = useState("warning");
+  const [snackBarText, setSnackBarText] = useState("");
+
   const token = localStorage.getItem("token");
 
   const onUserNameClick = () => {
@@ -117,6 +123,18 @@ function Setting(props) {
     setEnableBirth(false);
   };
 
+  const success = () => {
+    setSnackBar(true);
+    setSnackBarType("success");
+    setSnackBarText("Thay đổi thành công");
+  };
+
+  const fail = () => {
+    setSnackBar(true);
+    setSnackBarType("warning");
+    setSnackBarText("Lỗi");
+  };
+
   const submit = () => {
     let config = {
       headers: {
@@ -140,16 +158,36 @@ function Setting(props) {
           },
           config
         )
-        .then(() => cancel())
-        .catch((e) => console.log(e.response));
+        .then(() => {
+          success();
+          cancel();
+        })
+        .catch((e) => {
+          fail();
+          cancel();
+        });
     } else if (enableGender) {
       axios
         .post("/updateProfile/gender", { gender: newGender }, config)
-        .then(() => cancel());
+        .then(() => {
+          success();
+          cancel();
+        })
+        .catch(() => {
+          fail();
+          cancel();
+        });
     } else if (enableUserName) {
       axios
         .post("/updateProfile/userName", { userName: newUserName }, config)
-        .then(() => cancel());
+        .then(() => {
+          success();
+          cancel();
+        })
+        .catch(() => {
+          fail();
+          cancel();
+        });
     }
   };
 
@@ -157,11 +195,30 @@ function Setting(props) {
     return enableBio || enableBirth || enableGender || enableUserName;
   };
   let date = user.birth ? new Date(user.birth) : null;
-  date.setHours(date.getHours() - date.getTimezoneOffset() / 60);
-  let localDate = date.toISOString().slice(0, 10);
+  let localDate = "";
+  if (date) {
+    date.setHours(date.getHours() - date.getTimezoneOffset() / 60);
+    localDate = date.toISOString().slice(0, 10);
+  }
+
   const genders = ["Other", "Male", "Female"];
+
   return (
     <div className={classes.home}>
+      <SnackBar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        open={snackBar}
+        autoHideDuration={3000}
+        onClose={() => setSnackBar(false)}
+        message="Note archived"
+      >
+        <Alert onClose={() => setSnackBar(false)} severity={snackBarType}>
+          {snackBarText}
+        </Alert>
+      </SnackBar>
       {enableUserName && <div>Tên</div>}
       {enableBirth && <div>Ngày sinh</div>}
       {enableGender && <div>Giới tính</div>}

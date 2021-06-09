@@ -218,7 +218,7 @@ function AnswerCard(props) {
               key={key}
               src={
                 user.avatar ||
-                "https://cdn.dribbble.com/users/29574/screenshots/4882066/avatar_-_spider-man_-_dribbble.png?compress=1&resize=400x300"
+                "../customer_avatar.png"
               }
             />
           </MUILink>
